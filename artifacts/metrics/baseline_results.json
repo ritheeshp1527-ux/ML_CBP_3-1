@@ -1,0 +1,173 @@
+{
+  "dataset": {
+    "rows": 284807,
+    "columns": 31,
+    "fraud_count": 492,
+    "legitimate_count": 284315,
+    "fraud_rate": 0.001727485630620034,
+    "missing_cells": 0,
+    "infinite_cells": 0,
+    "duplicate_rows_keep_first": 1081,
+    "rows_in_duplicate_groups": 1854,
+    "time_is_nondecreasing": true,
+    "target_values": [
+      0,
+      1
+    ]
+  },
+  "split": {
+    "train": {
+      "rows": 170884,
+      "fraud": 360,
+      "legitimate": 170524,
+      "fraud_rate": 0.0021066922590763323,
+      "time_min": 0.0,
+      "time_max": 120396.0
+    },
+    "validation": {
+      "rows": 56961,
+      "fraud": 57,
+      "legitimate": 56904,
+      "fraud_rate": 0.0010006846789908884,
+      "time_min": 120396.0,
+      "time_max": 145247.0
+    },
+    "test": {
+      "rows": 56962,
+      "fraud": 75,
+      "legitimate": 56887,
+      "fraud_rate": 0.001316667251852112,
+      "time_min": 145248.0,
+      "time_max": 172792.0
+    }
+  },
+  "protocol": {
+    "split": "chronological 60/20/20 by original row order",
+    "threshold": 0.5,
+    "test_used_for_tuning": false,
+    "duplicates_dropped": false,
+    "caveat": "Initial baseline run; inspect split fraud counts and threshold behavior before interpreting."
+  },
+  "results": [
+    {
+      "model": "logistic_regression",
+      "fit_seconds": 0.3717156999919098,
+      "validation_latency_ms_per_row": 0.0009181580380295206,
+      "test_latency_ms_per_row": 0.00032494294475187866,
+      "training_rows_used": 170884,
+      "validation": {
+        "threshold": 0.5,
+        "precision": 0.6428571428571429,
+        "recall_sensitivity": 0.47368421052631576,
+        "specificity": 0.999736398144243,
+        "f1": 0.5454545454545454,
+        "average_precision_pr_auc": 0.6503592963865811,
+        "roc_auc": 0.967775829282189,
+        "mcc": 0.5514456424095294,
+        "tn": 56889,
+        "fp": 15,
+        "fn": 30,
+        "tp": 27,
+        "false_positive_rate": 0.0002636018557570645,
+        "false_negative_rate": 0.5263157894736842
+      },
+      "test": {
+        "threshold": 0.5,
+        "precision": 0.75,
+        "recall_sensitivity": 0.56,
+        "specificity": 0.9997538980786471,
+        "f1": 0.6412213740458015,
+        "average_precision_pr_auc": 0.6926036318107651,
+        "roc_auc": 0.9730787936318198,
+        "mcc": 0.6476811099622483,
+        "tn": 56873,
+        "fp": 14,
+        "fn": 33,
+        "tp": 42,
+        "false_positive_rate": 0.00024610192135285743,
+        "false_negative_rate": 0.44
+      },
+      "threshold_tuning_note": "Threshold fixed at 0.5 for initial baseline; tune on validation only in a later step."
+    },
+    {
+      "model": "logistic_regression_balanced",
+      "fit_seconds": 0.8143077999993693,
+      "validation_latency_ms_per_row": 0.00021798599072415345,
+      "test_latency_ms_per_row": 0.00023880657277938394,
+      "training_rows_used": 170884,
+      "validation": {
+        "threshold": 0.5,
+        "precision": 0.026969857218402962,
+        "recall_sensitivity": 0.8947368421052632,
+        "specificity": 0.9676648390271334,
+        "f1": 0.052361396303901436,
+        "average_precision_pr_auc": 0.7718772104989219,
+        "roc_auc": 0.9709273359132401,
+        "mcc": 0.15220016296926148,
+        "tn": 55064,
+        "fp": 1840,
+        "fn": 6,
+        "tp": 51,
+        "false_positive_rate": 0.03233516097286658,
+        "false_negative_rate": 0.10526315789473684
+      },
+      "test": {
+        "threshold": 0.5,
+        "precision": 0.04536222071767095,
+        "recall_sensitivity": 0.8933333333333333,
+        "specificity": 0.9752140207780337,
+        "f1": 0.08634020618556701,
+        "average_precision_pr_auc": 0.7436264160763403,
+        "roc_auc": 0.9820257703869073,
+        "mcc": 0.1981767063002954,
+        "tn": 55477,
+        "fp": 1410,
+        "fn": 8,
+        "tp": 67,
+        "false_positive_rate": 0.024785979221966355,
+        "false_negative_rate": 0.10666666666666667
+      },
+      "threshold_tuning_note": "Threshold fixed at 0.5 for initial baseline; tune on validation only in a later step."
+    },
+    {
+      "model": "random_forest",
+      "fit_seconds": 1.6641105000162497,
+      "validation_latency_ms_per_row": 0.0013825196189120564,
+      "test_latency_ms_per_row": 0.0015154752292286446,
+      "training_rows_used": 50000,
+      "validation": {
+        "threshold": 0.5,
+        "precision": 0.9473684210526315,
+        "recall_sensitivity": 0.3157894736842105,
+        "specificity": 0.9999824265429496,
+        "f1": 0.47368421052631576,
+        "average_precision_pr_auc": 0.7333788177932007,
+        "roc_auc": 0.9169208651813704,
+        "mcc": 0.5467504476487667,
+        "tn": 56903,
+        "fp": 1,
+        "fn": 39,
+        "tp": 18,
+        "false_positive_rate": 1.757345705047097e-05,
+        "false_negative_rate": 0.6842105263157895
+      },
+      "test": {
+        "threshold": 0.5,
+        "precision": 1.0,
+        "recall_sensitivity": 0.44,
+        "specificity": 1.0,
+        "f1": 0.6111111111111112,
+        "average_precision_pr_auc": 0.784594621006948,
+        "roc_auc": 0.9375339415566531,
+        "mcc": 0.6630802252584862,
+        "tn": 56887,
+        "fp": 0,
+        "fn": 42,
+        "tp": 33,
+        "false_positive_rate": 0.0,
+        "false_negative_rate": 0.56
+      },
+      "threshold_tuning_note": "Threshold fixed at 0.5 for initial baseline; tune on validation only in a later step."
+    }
+  ]
+}

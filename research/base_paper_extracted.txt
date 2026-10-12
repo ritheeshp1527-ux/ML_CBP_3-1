@@ -1,0 +1,1421 @@
+=== PAGE 1 ===
+Expert Systems With Applications 252 (2024) 124127
+Available online 3 May 2024
+0957-4174/© 2024 The Author(s). Published by Elsevier Ltd. This is an open access article under the CC BY-NC-ND license ( http://creativecommons.org/licenses/by-
+nc-nd/4.0/).
+Contents lists available at ScienceDirect
+Expert Systems With Applications
+journal homepage: www.elsevier.com/locate/eswa
+An online fuzzy fraud detection framework for credit card transactions
+Georgios Charizanos a, Haydar Demirhana,∗, Duygu İçenb
+a RMIT University, Mathematical Sciences, School of Science, Melbourne, 3000, Australia
+b Hacettepe University, Department of Statistics, Ankara, 06800, Turkiye
+A R T I C L E I N F O
+Keywords:
+Credit card fraud detection
+Class imbalance
+Separation
+Transaction fraud
+Online systems
+Fuzzy logistic regression
+A B S T R A C T
+Credit card transaction fraud is one of the challenging security concerns for financial firms globally. The
+continuously changing environment of fraud characteristics and the class imbalance and complete separation
+issues in fraud data create difficulties in accurately and efficiently predicting fraudulent transactions and
+implementing fraud detection systems in real-time. The study aims to develop a new real-time fraud detection
+framework that can efficiently be implemented online and address the issues caused by non-stationary changes
+in transaction and fraud characteristics, class imbalance, and complete separation. We propose a new approach
+to handle the impact of non-stationary changes in fraud transaction patterns. It enables efficiency in model
+training, given the sheer size of datasets. By implementing a robust fuzzy logistic regression model against
+class imbalance and separation problems, we address the challenge of having a very low rate of fraudulent
+transactions in the dataset and having separation issues due to specific characteristics of transactions. The
+analysis of the performance versus efficiency nexus of the proposed methodology reveals that the proposed
+framework shows strong performance results with specificity and sensitivity greater than 0.90 and Matthew’s
+correlation coefficient greater than 0.80 even on small sample sizes and produces highly accurate results in
+identifying fraudulent and non-fraudulent transactions with an accuracy greater than 0.99. Benchmarking with
+machine learning and other fraud detection approaches reveals that the proposed framework provides better
+detection performance while maintaining a higher rate of identifying non-fraudulent transactions than the
+alternative approaches. Improved classification performance leads to detecting fraudulent transactions with
+higher precision while avoiding misclassifying legitimate transfers, resulting in lower financial losses and
+improved customer satisfaction.
+1. Introduction
+Credit card fraud poses a significant financial burden on the global
+economy. 3.5 billion fraudulent card transactions were recorded in
+2022 globally, up from just 1.5 billion in 1992, which resulted in
+a total loss of 321 billion US dollars ( Aite-Novarica, 2022 ; Nilson-
+Report, 2024). Furthermore, the frequency of fraud activity has grown
+by 133% in the last 30 years. For example, in Australia, 1.7 million
+people were victims of fraud activity in 2021 and 2022, which is
+equivalent to 8.1% of the country’s total population (ABS, 2023). Credit
+card fraud involves the unauthorized use of cards linked to legitimate
+consumer accounts. It can be detected as unauthorized transactions on
+a customer’s banking accounts, where a transaction is usually flagged
+as fraudulent (𝑌 = 1 ) or not (𝑌 = 0 ). In response to the escalation of
+fraudulent activities, it is imperative to harness capabilities from data
+science methodologies to facilitate precise predictions of such events.
+There are three key characteristics of credit card fraud detection
+in the literature: Firstly, fraud characteristics are non-stationary and
+∗ Corresponding author.
+E-mail addresses: S3832990@student.rmit.edu.au (G. Charizanos), haydar.demirhan@rmit.edu.au (H. Demirhan), duyguicn@hacettepe.edu.tr (D. İçen).
+constantly change over time. The detection systems aim to identify
+anomalies in transaction data composed of different characteristics of
+fraudulent activity ( Dal Pozzolo, Caelen, Le Borgne, Waterschoot, &
+Bontempi, 2014). These datasets can either be historical or real-time
+live transaction data. The dynamic nature of fraud characteristics is
+due to the changing behavior of fraudsters, different types of fraud,
+and consumer demographics that influence human behavior towards
+fraud ( Kurshan, Shen, & Yu , 2020 ). This dynamic nature can cause
+fraud characteristics to change rapidly at any point in time, leading to
+the need for models that can handle rapid changes ( Kitts et al., 2015).
+Secondly, these systems utilize analytical methods to identify fraud-
+ulent and non-fraudulent transaction patterns in the binary response
+variable. However, such methods are sensitive to the problems of class
+imbalance and complete separation, which can result in biased predic-
+tions. Finally, such systems need to operate on a real-time basis. Over
+25 million transactions occur each hour globally ( Sandberg, 2023 ).
+Fraud detection algorithms must efficiently and accurately operate on
+https://doi.org/10.1016/j.eswa.2024.124127
+Received 21 December 2023; Received in revised form 4 April 2024; Accepted 26 April 2024
+
+=== PAGE 2 ===
+Expert Systems With Applications 252 (2024) 124127
+2
+G. Charizanos et al.
+large-scale data to achieve real-time implementation. The immense
+size of transaction data is a significant obstacle to the efficiency of
+implementation and, hence, the security of consumer accounts, given
+that it is often challenging to protect consumers retrospectively.
+The core methods to detect fraudulent anomalies in transaction data
+include machine learning (ML), statistical, and fuzzy approaches. A
+systematic review of literature on credit card fraud detection using
+approaches such as support vector machines (SVMs), random forests,
+neural networks (NNs), deep learning methods, K-nearest neighbors
+(KNN), and extended gradient boosted tree is presented by Ghai and
+Kang (2022). Another extensive systematic literature survey by Abdal-
+lah, Maarof, and Zainal (2016) provides a comprehensive overview of
+issues impacting the performance of fraud detection systems.
+Hilal, Gadsden, and Yawney (2022) explore SVMs in detail, propos-
+ing seven variations ranging from classical SVMs to incremental clus-
+tering, weighted one-class discriminative feature selection, and KNN
+models. A classification performance analysis is given by assessing
+the overall accuracy of each method applied to machine learning
+datasets. Shen, Tong, and Deng (2007) focus on using decision trees
+against NNs and classical logistic regression on a credit card transac-
+tions dataset, which is not freely available, to compare the performance
+of considered methods. Fang, Zhang, and Huang (2019) propose over-
+sampling in ML methods to improve classification performance given
+the imbalance problem in transaction fraud data. They compare a light
+gradient boosting model against random forests and gradient boosting
+machines, indicating that the former produces stronger classification
+results with better efficiency. Strelcenia and Prakoonwit (2023) explore
+various data augmentation methods, such as kernelized conditional
+generative adversarial networks. The authors focus on how such meth-
+ods perform under the significant imbalance setting for fraud detection,
+showcasing strong F1 and accuracy scores. Similarly, Ba (2019) uses
+generative adversarial networks (GANs) for fraud detection using real
+credit card transaction data from 2015, which is also used in this
+study. Chen, Lee, Huang, and Peng (2024) propose using intelligent
+sampling with a self-supervised learning algorithm for the binary clas-
+sification of two problems involving credit card fraud and card default
+rates. The authors explore the use of such machine learning techniques
+against imbalance problems and real-time implementation.
+The classical statistical approach in fraud detection involves us-
+ing logistic regression for the classification task (Ghai & Kang, 2022;
+Shen et al., 2007). However, classical logistic regression showcases
+a low fraud detection rate with significant inaccuracy, which can
+be attributed to the fact that classical logistic regression methods
+are vulnerable to imbalance and separation issues, resulting in low
+classification accuracy (Charizanos, Demirhan, & İçen, 2023).
+Fuzzy methods constitute another class of methods employed for
+detecting fraudulent transactions. Lenard and Alam (2005) analyze
+using fuzzy logic and fuzzy clustering methods for fraud detection.
+The authors explore both the benefits and critical challenges of fuzzy
+methods for fraud detection from a theoretical perspective, conclud-
+ing that fuzzy methods can offer significant opportunities for fraud
+detection for online card transactions. Casalino, Castellano, and Mencar
+(2019) consider using fuzzy techniques for fraud detection, such as
+dynamic incremental semi-supervised fuzzy c-means clustering. The
+application is done on the same credit card transaction dataset as in this
+study. The authors conclude that the proposed fuzzy method performs
+well in handling the imbalance problem. Behera and Panigrahi (2015)
+propose using a fuzzy NN model that involves an input fuzzy rule
+combiner component with an NN learning component, which shows
+promising results in handling imbalance and classification accuracy.
+We compare the model proposed in our study against Behera and
+Panigrahi (2015)’s work. However, it is not possible to compare the
+performance of our model to Casalino et al. (2019)’s model since they
+do not cover the performance measures we consider. Razooqi, Khurana,
+Raahemifar, and Abhari (2016) propose a fuzzy logic methodology for
+fraud detection, which is compared against artificial neural networks
+(ANNs). The authors analyze the fuzzification and de-fuzzification of
+input and output information used to predict probabilities in a fuzzy
+logic model, then implement this model in five steps. The classification
+results, evaluated using only mean squared error, indicate that the ANN
+model outperforms the fuzzy method. However, multiple measures are
+required to provide targeted insights towards a confusion matrix. Jain,
+Tiwari, Dubey, and Jain (2019) explore several algorithms used for
+fraud detection, including SVMs, ANNs, KNN, decision trees, and a
+fuzzy logic methodology. The authors showcase a confusion matrix
+approach to validate classification performance. The ANN model out-
+performs all other considered methods using a percentage accuracy
+score. However, using a single performance measure does not ensure
+generalizability and only provides insights into the model’s overall
+accuracy. It does not provide a complete assessment of how these
+models perform under imbalance and separation.
+Hybrid models are also considered for fraud detection in the lit-
+erature. Dal Pozzolo, Boracchi, Caelen, Alippi, and Bontempi (2017)
+and Dal Pozzolo et al. (2014) use a two-step method with two semi-
+supervised models. One model is implemented online in a smaller
+transaction sample size, and the other is used to train the model on
+the whole dataset. This involves implementing the method in real-time
+using a small sample to train the model, followed by a retrospec-
+tive analysis on a much larger dataset to validate model parameter
+selection and performance. Srivastava, Kundu, Sural, and Majumdar
+(2008) consider using hidden Markov models (HMMs), trained by using
+behavioral statistics of cardholders in transaction data. The authors
+use a process of probabilistic elimination with the HMM model, where
+if a transaction does not produce a sufficiently high probability, it is
+classified as fraudulent. Maes, Tuyls, Vanschoenwinkel, and Manderick
+(2002) propose using a Bayesian belief network model instead while
+they compare against an NN approach. However, the Bayesian and
+NN models showcase a low true positive rate, indicating a weak fraud
+detection accuracy. HaratiNik, Akrami, Khadivi, and Shajari (2012)
+propose a hybrid model that utilizes Fogg behavioral analysis on the
+merchants, assessing their motivation and ability towards card fraud.
+Information from this analysis is then used to obtain fraud tendency
+weights, which predict fraudulent activity, given a set of fuzzy rules.
+The model showcases strong true positive rates against standard fuzzy
+methods with a moderately high false positive rate. While this could be
+attributed to imbalance issues, the authors do not use a comprehensive
+set of performance measures to explore the impact of imbalance and
+separation.
+Critical limitations to these analytical methods encompass several
+important aspects. There is a lack of focus on imbalance issues in fraud
+detection studies (Behera & Panigrahi, 2015; Ghai & Kang, 2022; Maes
+et al., 2002). Transaction data are significantly imbalanced towards
+non-fraudulent activities. The presence of a class imbalance in the
+data can bias the model to predict mostly the majority class. This
+leads to poor performance in detecting fraudulent activity, which is
+the minority class in the binary responses. It may also lead to a
+model that is less sensitive to detecting the true underlying patterns
+and associations in fraudulent transactions, hence more vulnerability
+towards false negative predictions. While a few studies for fraud de-
+tection mention the imbalance issue (Abdallah et al., 2016; Ba, 2019;
+Hilal et al., 2022), these do not explore the details of any potential
+impact. Behera and Panigrahi (2015) evaluate a hybrid of a rule-based
+fuzzy inference system and NN for fraud detection by utilizing Receiver
+Operating Characteristic (ROC) curves to assess classification perfor-
+mance. However, due to the lack of consideration of the specificity
+and sensitivity, it is unclear how the imbalance issues in the data
+influence the proposed model’s classification performance. Ghai and
+Kang (2022) explore several different ML methods to propose solutions
+to the fraud detection problem. However, there is no consideration of
+the class imbalance problem in Ghai and Kang (2022)’s study, which
+could be achieved by employing a comprehensive assessment of the
+sensitivity and specificity performance measures. Hilal et al. (2022)
+
+=== PAGE 3 ===
+Expert Systems With Applications 252 (2024) 124127
+3
+G. Charizanos et al.
+provide a thorough discussion of the class imbalance issue in fraud
+detection studies, exploring how the proposed SVM algorithms provide
+a robust solution to the imbalance problem. The authors comment that
+this occurs due to the ability of such methods to work with many
+different data features. However, the lack of focus on the sensitivity
+and specificity performance of the proposed classification methods
+showcases a lack of extensive analysis on how imbalance actually im-
+pacts classification performance on these SVMs. Abdallah et al. (2016)
+consider several different ML models in a survey of methods for fraud
+detection. The authors explore several different algorithms and the core
+problems associated with online fraud detection, specifically defining
+the imbalance setting to be generally different based on the type of
+fraudulent activity. However, the class imbalance problem needs to
+be considered from a classification performance perspective. On the
+other hand, Strelcenia and Prakoonwit (2023) thoroughly discuss how
+class imbalance impacts classification performance and claim that the
+proposed GAN methodologies are robust towards this issue. However,
+there is no analysis of the sensitivity and specificity performance of
+the proposed algorithm, which would enable a complete assessment of
+how well the model performs under the imbalance setting. Similarly, Ba
+(2019) offers limited consideration of the imbalance problem with no
+direct analysis of how the GAN algorithm performs against the signif-
+icant imbalance towards fraudulent activity. The authors showcase an
+extensive analysis of classification performance, providing greater in-
+sights into how the model performs in general. However, the exclusion
+of sensitivity and specificity measures does not provide an additional
+layer of assessment targeted at the imbalance problem. Moreover, the
+class imbalance problem is often approached from a theoretical stand-
+point with only accuracy and F1 scores being considered (Strelcenia
+& Prakoonwit, 2023). However, in summary, this crucial issue needs
+to be assessed and discussed thoroughly as part of analyzing the model
+results using a comprehensive set of performance measures that include
+both sensitivity and specificity scores.
+The lack of consideration on the issue of complete separation and its
+impact on classification performance is another limitation in the liter-
+ature. Separation can occur even on significantly imbalanced datasets.
+For example, consider fraudulent activity that could be associated with
+higher transaction amounts, specific geographic locations, or specific
+consumer demographics, such as age or profession. This could mean
+that certain consumer populations are more vulnerable to online fraud;
+hence, separation may occur. Even if fraudulent activity is the minority
+class with significant imbalance, these characteristics would perfectly
+separate the probability of a fraudulent transaction. The presence of
+complete separation leads to a model that fits the training data excep-
+tionally well but performs poorly with data outside the training set
+due to being unable to learn from meaningful patterns in the data.
+Therefore, separation should be considered while assessing classifica-
+tion performance. However, while Abdallah et al. (2016) and Hilal
+et al. (2022) explore the problem of class imbalance to a great extent
+from a theoretical perspective, there is no mention of the problem of
+complete separation in fraud datasets and how this could influence
+classification performance through over-fitting issues. Ba (2019) claims
+that the proposed methodology is robust towards imbalance problems,
+with strong performance scores across several measures. However,
+there is no exploration of how classification performance could be
+artificially inflated due to over-fitting caused by separation issues.
+Lastly, while Strelcenia and Prakoonwit (2023) provide an extensive
+discussion on the imbalance issue, the authors do not explore how
+the presence of separation would impact classification performance.
+Moreover, several instances could benefit from analyzing the separation
+issue and the concept of over-fitting (Behera & Panigrahi, 2015; Shen
+et al., 2007).
+The reviewed literature showcases a limited number of measures
+used to assess the overall performance of the implemented models. Be-
+hera and Panigrahi (2015) only utilize the ROC curves to assess classifi-
+cation performance, while Shen et al. (2007) consider a cumulative rate
+of decline percentage score. On the other hand, Strelcenia and Prakoon-
+wit (2023) consider an extensive selection of classification performance
+measures, such as precision, recall, F1 score and accuracy. However,
+the lack of specificity and sensitivity scores do not allow for a complete
+assessment of imbalance, while Mathew’s Correlation Coefficient (MCC)
+would have provided further insights towards separation. While Chen
+et al. (2024)’s approach showcases strong F1 performance across both
+datasets, the set of performance measures is not sufficient to fully assess
+the response of proposed algorithms to the imbalance and separation
+problems. The authors provide only F1, precision, and recall as mea-
+sures, which do not fully showcase that the model responds well to the
+imbalance problem. This is due to the lack of analysis on variability
+between performance sensitivity and specificity, which would be a
+strong indicator of handling imbalance problems. Moreover, the lack
+of sufficient performance measures does not allow for a comprehensive
+assessment of potential over-fitting caused by complete separation in
+the data.
+A comprehensive set of measures such as sensitivity, specificity,
+MCC, and F1 score provide a more thorough understanding of the
+combined influence of class imbalance with complete separation on a
+classifier. The presence of perfect scores across specificity, sensitivity,
+and F1 scores strongly indicates that a model learns extensively from
+a distinct group of predictors, hence not identifying other patterns
+successfully. The limited number of performance measures employed
+per study in the literature indicates the need for such an assessment.
+Moreover, the small set of performance metrics and lack of sensitivity
+and specificity assessment make it difficult to provide targeted insights
+towards imbalance issues (Charizanos et al., 2023). The studies that do
+not consider sensitivity and specificity together potentially overlook the
+impact of class imbalance and report a model as promising while it is
+severely impacted by separation.
+Moreover, there is limited consideration of the non-stationary
+changes in fraud characteristics. Fraud transaction data include sev-
+eral consumer and merchant characteristics that influence fraudster
+and consumer behavior towards credit card transactions. These rapid
+changes in behaviors impact how efficiently and accurately a financial
+institution can react to fraudulent activity. As such, these charac-
+teristics of fraudulent activity can also influence the classification
+performance of any given model when applied in real-time. Kur-
+shan et al. (2020) focus on the non-stationary characteristics of fraud
+through the lenses of the different types of fraudulent activity and how
+these influence behavior. They identify and explore the eight most
+common types of fraud, ranging from online payments to fraudulent
+transactions due to identity theft and elderly scams. It is shown that
+different fraud types impact consumers differently based on certain
+demographic elements. Furthermore, the authors explain that such non-
+stationarity creates rapid changes in fraud patterns and conclude that
+such issues cause significant scaling and complexity challenges in fraud
+data due to the variability in fraud characteristics. Dal Pozzolo et al.
+(2017) explore different characteristics of fraudulent transactions, in-
+cluding consumer and merchant information. The authors define these
+as demographic instances of consumer and merchant and financial
+nature that describe a transaction. These instances are non-stationary,
+given the vast variability of characteristics that cause fraud patterns
+to occur rapidly, even in short periods. He, Leslie, and Grant (2024)
+explore the nature of non-stationary characteristics in fraudulent activ-
+ity on a time series basis. The authors propose a hybrid approach with
+a classical time series and NN methodology applied alongside a fuzzy
+clustering model. The non-stationary characteristics of fraud are only
+defined in this study through the concept of a time series format. At
+the same time, the authors do not consider how the different types of
+fraud can influence rapidly changing patterns.
+Lastly, there is a lack of exploration on how the proposed models
+can be implemented on a real-time basis. Some works do not consider
+how the proposed methods can be implemented in real-time (Srivastava
+et al., 2008; Strelcenia & Prakoonwit, 2023). On the other hand,
+
+=== PAGE 4 ===
+Expert Systems With Applications 252 (2024) 124127
+4
+G. Charizanos et al.
+one proposition involves a two-step method with two semi-supervised
+models (Dal Pozzolo et al., 2017, 2014). The first step includes running
+the method in real-time on a small sample of transactions, and the
+second step is to run the model retrospectively on the full dataset
+to adjust the first. However, such an approach may be susceptible to
+non-stationary changes in fraud characteristics because it relies heavily
+on learning from past data in equal terms with recent data. Another
+methodology involves using ML methods such as random forest, SVMs,
+and decision trees on historical data to train the model in recognizing
+cardholder, transaction, and merchant features. These features then
+form patterns to predict whether a transaction is fraudulent or not
+on a real-time basis. However, the overall complexity of the model
+and consideration of limited fraud characteristics do not allow for
+adaptability on real-time detection, given the continuously changing
+patterns of fraud in the finance industry. Moreover, deep learning
+techniques are used to detect patterns in real-time (Abakarim, Lahby,
+& Attioui, 2018). An auto-encoder, an NN trained to reconstruct input
+data and learn key patterns in non-fraudulent transactions, is used
+by Abakarim et al. (2018). However, while the model is trained on
+historical fraud data and then deployed for real-time classification, the
+computational effort requirement is unclear. As the classification of live
+transactions occurs in one main stage, there can be challenges with
+computation time if large datasets are processed. The overall method of
+historical data retrieval using structured query language pipelines can
+increase complexity, with such systems being sensitive to changes in the
+underlying data structures. These challenges can result in inefficiencies,
+hence, the inability to detect fraud in real-time.
+The challenges associated with the mentioned issues can detri-
+mentally impact predictive accuracy, causing significant losses due to
+fraudulent transactions or inconvenience to customers who are making
+legitimate transactions classified as false positives. One method for
+reducing false positive rates in fraud detection systems utilizes tree-
+based rule generation ML algorithms, such as random forest, decision
+tree, and gradient boosting (Vorobyev & Krivitskaya, 2022). While such
+approaches can help reduce false positives, they do not address the
+issues of false negative rates. This inflates fraud risk due to incor-
+rectly classified fraudulent transactions. Nevertheless, these limitations
+highlight the need for further research into implementing models in
+real-time, assessing models appropriately for separation, imbalance,
+and overall comprehensive performance and optimization evaluation.
+The primary motivation of our work is to propose a new methodol-
+ogy for real-time fraud detection that specifically addresses the critical
+challenges identified in the literature. The focus is on the imbalance,
+complete separation, and efficiency for real-time implementation is-
+sues. Meanwhile, we address the rapid changes in fraud characteristics.
+We utilize the fuzzy logistic regression framework of Charizanos et al.
+(2023), which is shown to be robust against imbalance and separation
+issues. We implement this approach in three stages: tuning, learning,
+and online implementation. This framework offers essential benefits
+in handling class imbalance and complete separation in the data,
+enhanced interpretability through fuzzy membership values, flexibility
+in decision boundaries, and applicability of the fuzzy logistic regression
+framework on a real-time environment with large data (Charizanos
+et al., 2023; Pourahmad, Ayatollahi, Taheri, & Agahi, 2011). Thus,
+this study’s central objective is to develop a real-time transaction fraud
+detection methodology that is not impacted by class imbalance and
+separation problems, provides practitioners with low false positive and
+high true positive detection rates, captures changing, non-stationary
+fraud characteristics in the data, and can operate on smaller sam-
+ple sizes without losing performance. This is achieved by using the
+fuzzy classifier from Charizanos et al. (2023) and separately employing
+tuning and learning stages using weighted historical data and then
+implementing online fraud detection on the most recent transaction
+data.
+The practical contributions of our study are that (i) it provides a
+highly precise and efficient solution for transaction fraud detection
+using the fuzzy logistic regression framework on a real-time basis.
+(ii) The proposed method handles the imbalance in the proportions
+of fraudulent and legitimate transactions in the data without losing
+accuracy. (iii) It is unaffected by the separation created due to data
+characteristics. (iv) Our method successfully captures the changing
+fraudster behavior and consumer characteristics to provide consistently
+high precision. (v) Our framework is readily applicable in banking
+practice as all the computer codes to implement the framework are
+available at https://github.com/GZanos/FFL. From the methodological
+viewpoint, the contributions of our study are that (i) we utilize a
+probabilistic sampling technique to create the model’s training dataset
+that allows us to capture changing fraud characteristics better and to
+reduce the size of the required training dataset to increase the model’s
+efficiency in online implementation. (ii) The use of fuzzy coefficients
+and the fuzzification of the binary responses allow the model to account
+for more uncertainty, resulting in better handling of class imbalance
+and separation issues in fraud data.
+Section 2 describes the data and proposed methodology in this
+study. Section 3 depicts the application of the proposed online fraud
+detection framework and compares it with other fraud detection ap-
+proaches that use the same fraud dataset. Section 4 includes the study’s
+conclusions and discussions about its limitations and future work.
+2. Data and methodology
+2.1. Real transaction fraud dataset
+We utilize a European customer transaction dataset, which is a real
+dataset of credit card transactions, including 284,807 transactions done
+over two days, 492 of which are fraudulent. This real dataset is also
+used or analyzed in many studies (Carcillo, Dal Pozzolo et al., 2018;
+Carcillo, Le Borgne, Caelen and Bontempi, 2018; Carcillo et al., 2021;
+Dal Pozzolo et al., 2017, 2014; Han, Zhu, Zhou, & Cai, 2022; Lebichot,
+Le Borgne, He-Guelton, Oblé, & Bontempi, 2020). The dataset contains
+29 predictors, including the amount of each transaction, named V29.
+The total value of the transactions in the data is estimated to be $25.2
+million US dollars, with the average transaction amount varying from
+$0.01 USD to $25, 692 USD . The average amount for non-fraudulent
+transactions is $88 USD, while for fraudulent transactions, it increases
+to $122 USD. The dataset has 28 more characteristics, named from
+V1 to V28, that are masked due to data sensitivity policy in financial
+institutions.
+As expected, the number of fraudulent transactions relative to the
+size of the data indicates that the data is significantly imbalanced to-
+wards normal transactions (𝑌 = 0 class) in the binary response variable,
+given that only 0.17% of the transactions are actually fraudulent (𝑌 = 1
+class).
+We utilize scatter plots in Figs. 1, 2, and 3 across combinations
+of predictors and the response variable to investigate for potential
+complete separation in the data. Since the scatter plots are colored
+based on the 𝑌 = 0 and 𝑌 = 1 classes, we can see if the classes in the
+response variable are separated according to the pairs of independent
+features in these scatter plots. Different combinations of predictors are
+analyzed to assess which predictors perfectly separate the binary re-
+sponse variable, Class, indicating whether the transaction is fraudulent
+or not. Investigating the first set of predictor combinations, as shown in
+Fig. 1, there is a distinct separation in the binary response variable for
+V3–V4, V7–V8, V9–V10, and V11–V12 predictors. This is shown by the
+positive class instances clustering away from the negative class. Fig. 2
+shows more distinct clustering for V13–14, V15–16, and V17–18. Fig. 3
+shows no obvious clustering for any of the final three combinations.
+Thus, we can conclude that significant complete separation is present
+for at least half of the combinations of predictors on the binary response
+variable.
+To assess the co-relationship patterns between the response variable
+and predictors, we calculate the point bi-serial correlation between the
+
+=== PAGE 5 ===
+Expert Systems With Applications 252 (2024) 124127
+5
+G. Charizanos et al.
+Fig. 1. Scatter plots of predictors and response variable for separation detection for the first 12 predictors.
+Fig. 2. Scatter plots of predictors and response variable for separation detection, for the second set of 12 predictors.
+pairs of binary responses and continuous predictors and the Pearson
+correlations between the pairs of predictors. The results are shown in
+Fig. 4. There is no notable correlation between the pairs of predictors
+except those with the transaction amount. This is a desired result
+to avoid multicollinearity. Most predictors are significantly correlated
+with the response variable at a 5% significance level, as shown by
+an ‘*’ next to the predictor name in Fig. 4 . Thus, the predictors are
+associated with the response variable and can contribute to the model
+for classification.
+Fraudster behavior and consumer demographics/characteristics
+cause patterns to vary in the data significantly and rapidly. To examine
+the level of changes in the data characteristics, we employ the time
+series plots and the coefficient of variation (CV) to assess the variation
+in the predictors since the measurement units of the predictors are
+masked. CV is defined as the ratio of standard deviation to the mean
+of a variable. Table 1 shows the CVs of the predictors. All predictors,
+except the amount of fraudulent activity (V29), exhibit extremely large
+variation, implying a high level of change in each predictor. The time
+series plots of predictors in Fig. 5 appear to be centered around zero.
+However, they have rapid spikes and sudden changes in the range
+of the series, indicating high volatility. Thus, sudden changes in the
+characteristics of the fraud dataset are evident from CVs and time series
+plots of predictors.
+
+=== PAGE 6 ===
+Expert Systems With Applications 252 (2024) 124127
+6
+G. Charizanos et al.
+Fig. 3. Scatter plots of predictors and response variable for separation detection for the final set of 6 predictors.
+Fig. 4. Point bi-serial correlations between the pairs of the response variable and predictors and the Pearson correlations between the pairs of predictors. The value 0 in cells
+represents a correlation less than 0.01. An ‘*’ next to the variable name indicates the significance of the correlation between the response variable and the corresponding predictor.
+2.2. Simulated transaction fraud dataset
+To further enhance the generalizability of the proposed online sys-
+tem using fuzzy logistic regression, we consider an additional simulated
+dataset by Shenoy and Harris (2021). This dataset includes transaction
+data across 800 merchants and 1000 customers during a six-month
+period from June 2020 to January 2021. This simulated dataset is fairly
+extensive in the information included for each transaction, aiming to
+represent a real-world scenario. It includes information about customer
+demographics, such as age, location of residence, and job description,
+along with full details of merchant facilities. There are 555,000 trans-
+actions, all occurring within the US, with a rate of imbalance at 99.6%
+
+=== PAGE 7 ===
+Expert Systems With Applications 252 (2024) 124127
+7
+G. Charizanos et al.
+Table 1
+Coefficient of variation values of all predictors.
+V1 V2 V3 V4 V5 V6 V7 V8 V9 V10
+1.1E+12 −2.0E+12 −1.6E+12 1.7E +12 8.4E +12 3.1E +12 −4.0E+12 1.4E +13 −9.3E+11 1.5E +12
+V11 V12 V13 V14 V15 V16 V17 V18 V19 V20
+5.4E+11 9.5E +11 1.4E +12 −6.5E+12 −1.7E+12 −3.8E+12 −1.3E+12 1.7E +12 1.2E +12 4.4E +11
+V21 V22 V23 V24 V25 V26 V27 V28 V29
+−2.2E+12 −1.3E+12 −6.4E+11 4.1E +11 −7.5E+11 −8.6E+11 1.2E +11 −9.4E+10 2.8E +00
+Fig. 5. Time series plots of predictors to examine changing fraud characteristics.
+towards the 𝑌 = 0 class. Only 0.39% of transactions are actually
+fraudulent. We utilize 11 predictors, which include merchant type,
+category of products, amount of transaction, customer city location,
+state in the US where the customer is located, the population of the city
+in which the customer is located, their job, age, time of the transaction
+occurrence, and the merchant’s coordinates with some located overseas.
+Scatter plots in Fig. 1, 2, and 3 of the Supplementary Material
+are created to examine complete separation in the data using sets
+of predictors and binary responses. Using the scatter plots, we look
+for distinct clustering patterns in the binary responses for any set of
+predictors. Out of 16 considered combinations of predictors, 9 show
+distinct clustering of the binary responses. More specifically, Unix time
+and merchant location, type, product category, amount, city and state
+of customer’s residence, population demographic, and customer’s age
+showcase strong clustering of the binary responses, providing evidence
+for complete separation in the data.
+2.3. Fuzzy logistic regression
+The fuzzy logistic regression model, defined in Eq. ( 1), captures
+the relationship between the fuzzy binary response variable, ̄𝑌 , and a
+set of predictors, 𝑿 = (𝑋𝑖),𝑖 = 1, …,𝑘 , by using the associated fuzzy
+coefficients, ̄𝜷 = ( ̄𝛽𝑗 ),𝑗 = 0 , 1, …,𝑘 , and fuzzy success probabilities,
+̄ 𝑝∈ [0, 1].
+log
+( ̄𝑃
+1 − ̄𝑃
+)
+= ̄𝛽0 + ̄𝛽1𝑋1 + ̄𝛽2𝑋2 +⋯ + ̄𝛽𝑘𝑋𝑘 (1)
+2.3.1. Fuzzification of binary responses
+A binary triangular fuzzy number (TFN), ̄𝑌 , defined by three values
+𝑦1 < 𝑦2 < 𝑦3, and a membership function 𝜇𝑌 (𝑥) (Dubois & Prade ,
+1978), operates as a mapping from a binary discrete set Z2 = {0, 1}
+to R′ = {𝑥 ∈ R| − 1 ≤𝑥 ≤ 1} and is a function 𝐹 ∶ Z2 → R′ defined as
+𝐹 (𝑌 ) = [𝑌 −𝑚⋅𝓁⋅ 𝑈,𝑌,𝑌 +𝑚⋅𝑟⋅𝑈 ], where𝑈 ∼𝑈𝑛𝑖𝑓𝑜𝑟𝑚 (𝐼𝐿,𝐼𝑈 ) and𝑚
+is the degree of fuzziness. Here 𝑟 and 𝓁 are to adjust the symmetry of
+output TFN. The upper and lower limits, 𝐼𝐿 and 𝐼𝑈 are user-specified
+parameters (Charizanos et al., 2023).
+2.3.2. Random fuzzy vectors for coefficient estimates
+Random fuzzy vectors ̄𝑉𝑘 = ( ̄𝑉1𝑘, …, ̄𝑉𝑁𝑘 ) are generated within a
+pre-defined range of ̄𝐼𝛽 = [ ̄𝐼 −, ̄𝐼 +] by ordering random crisp vectors,
+such that 𝑥1𝑘 < 𝑥2𝑘 < 𝑥3𝑘, from a set of randomly generated crisp
+vectors, 𝑣𝑘 = (𝑥1𝑘, …,𝑥 3𝑁+3,𝑘), where 𝑥𝑖𝑘 ∈ [0, 1]. These fuzzy vectors
+are used for the generation of fuzzy coefficients,̄𝜷. Then, ̄𝜷 are plugged
+in the model equation in Eq. ( 1), and fuzzy success probabilities ̄𝑷 are
+computed. The process is repeated 𝑀 times, defined by the user as
+the number of Monte Carlo (MC) replications. Optimization is achieved
+by the use of the fuzzy definitions for MSE, MAE, or RMSE optimiza-
+tion measures, while Specificity, Sensitivity, F1 Score, and MCC are
+computed as performance measures ( Charizanos et al., 2023).
+2.3.3. Classification of subjects with a fuzzy threshold
+The vertex position of each TFN probability, ̄𝑃 , is classified by com-
+paring against a fuzzy threshold ̄ 𝜏= (𝑎1,𝑎 2,𝑎 3). Firstly, the expected
+value of ̄𝑃 , E(̄𝑃 ), is calculated following Dubois and Prade (1978). The
+difference between ̄𝑃 and ̄ 𝜏and width,𝑤(D) are estimated. If E(̄𝑃 )<𝑎 2,
+̂ 𝑦2 = 0 , otherwise, ̂ 𝑦2 = 1 . The outcome of this process is a matrix
+representing the output ̂𝑌 where each element is a triangular fuzzy
+number with the vertex ̂ 𝑦2 is equal to either 0 or 1, while ̂ 𝑦1 and ̂ 𝑦3
+points are estimated by ̂ 𝑦1 = ̂ 𝑦2 −𝑤(D) and ̂ 𝑦3 = ̂ 𝑦2 +𝑤(D).
+2.4. Real-time fuzzy fraud detection
+This section presents the proposed fraud detection framework, start-
+ing with a general description and delving into the implementation
+
+=== PAGE 8 ===
+Expert Systems With Applications 252 (2024) 124127
+8
+G. Charizanos et al.
+Fig. 6. General implementation of credit card fraud detection with binary response variable (RV), using fuzzy methodology and stratified random sampling (SRS) to handle
+non-stationary changes in transaction data.
+details. A general outline of the methodology is first given. Then, we
+explore the handling of non-stationary changes in transaction fraud
+characteristics, the tuning and learning stages of the fuzzy logistic
+framework, and finally, the online implementation using fuzzy coeffi-
+cients.
+2.4.1. Outline of implementation
+Fig. 6 displays the overall process of implementing our method-
+ology for transaction fraud detection. The first step is to gather all
+the required historical data, with required binary responses for fraud
+and non-fraud transactions, along with the predictors. The volume of
+the historical data can be large. This does not create any issues in
+our framework. Step 2 involves using stratified random sampling to
+handle non-stationary changes in fraud characteristics, as defined in
+Section 2.4.2. In Step 3, the binary responses are fuzzified using the
+method outlined in Section B.1, and then the tuning and learning stages
+are implemented in Step 4. In Step 5, we extract the fuzzy coefficients
+using the single optimal solution from the tuning and learning stages.
+These are then applied to online transactions using the fuzzy logistic
+regression equation for each transaction at a time. We then classify
+the fuzzy probabilities that are output from Step 6 into fuzzy binary
+outcomes, which are used in the final step to decide whether a trans-
+action is fraudulent or not, taking relevant action to protect consumer
+accounts. The methodology as a whole is executed with R, version
+4.2.3. Our codes for the method and applications in this article are
+given at https://github.com/GZanos/FFL . Fig. 7 presents details and
+the flow chart of the proposed framework with every function defined
+under Sections 2.3 and 2.4.
+2.4.2. Handling non-stationary changes in fraud transaction data
+Continuous changes in fraud characteristics govern the transaction
+fraud environment. The types of transaction fraud can change suddenly
+and frequently. This creates a highly sensitive environment towards
+non-stationary changes and the necessity to handle such patterns in
+the data. In our methodology, stratified random sampling ( Cochran,
+1977; Kalton & Flores-Cervantes , 2003 ) is used to apply weights in
+the transaction data using a timestamp component. In this way, we
+assign a higher representation to the recent fraudulent transactions
+than the older ones while keeping the level of randomness stable with
+a probabilistic sampling technique ( Cochran, 1977).
+The process to handle the data for the proposed fraud detection
+framework is outlined in Fig. 8. The dataset of 𝑁 +𝑉 transactions that
+will be used to train the fraud detection system is first divided into
+training and validation portions of sizes 𝑁 and 𝑉 without changing
+the order of transactions. Thus, a proportion of the transactions at the
+last segment of the 𝑁 +𝑉 transactions is separated as the validation
+portion. Random sampling must be avoided to preserve the changing
+fraud and consumer characteristics while specifying the validation set.
+The stratified random sampling is implemented on the training
+portion of the whole dataset. The overall population of 𝑁 credit card
+transactions in the training portion is first divided into two strata: 𝑆1
+and 𝑆2, given a timestamp threshold 𝑡. This timestamp threshold is
+user-defined and represents the desired timestamp that separates the
+periods of recent and historical data. Random sampling is then used
+to create two new samples 𝑠1 and 𝑠2 of sizes 𝑛1 and 𝑛2 from 𝑆1 and
+𝑆2, respectively. 𝑛1 and𝑛2 are specified based on the characteristics of
+the fraud dataset and the availability of computational resources. The
+same rate of 𝑌 = 1 class is maintained in both 𝑠1 and 𝑠2. We analyze
+the within-stratum variance, 𝑉𝑖,𝑖 = 1, 2, for both recent and historical
+data using Eq. ( 2). A lower within-stratum variance indicates less
+variability, hence a more homogeneous stratum that better represents
+non-stationary changes in recent fraud characteristics.
+𝑉𝑖 =
+(
+1
+𝑛𝑖
+𝑛𝑖∑
+𝑗=1
+𝐼{𝑌𝑖 ∈𝑆𝑖}
+)(
+1 − 1
+𝑛𝑖
+𝑛𝑖∑
+𝑗=1
+𝐼{𝑌𝑖 ∈𝑆𝑖}
+)
+, (2)
+where 𝑉𝑖 ∈ [0, 1] and 𝐼{⋅} is an indicator function. Then, we find the
+weight factor towards recent data in the first stratum relative to both
+strata using Eq. (3):
+𝑊𝑡 = 𝑉1
+𝑉1 +𝑉2
+(3)
+We take 𝑛1𝑊𝑡 observations from 𝑠1 and 𝑛2𝑊𝑡 from 𝑠2 to create the
+training sample. The training sample is then used for hyper-parameter
+tuning and learning stages.
+2.4.3. Tuning and learning stages
+The tuning stage aims to find the optimal parameter settings under
+which the model showcases the best performance results for the fuzzy
+logistic regression model of Section 2 . There are several user-specified
+parameters in the fuzzy logistic regression model. These include the
+limits for generating random coefficient values, degree of fuzziness 𝑚,
+asymmetry points,𝑙,𝑟 , and minimum and maximum fuzzification limits.
+Users can also select different fuzzy thresholds for classification. The
+model is implemented over a grid of different parameter settings. Per-
+formance and optimization results are extracted for each combination
+of the parameters in the grid, which allows for the assessment of how
+the framework performs under different conditions. This performance
+analysis allows for selecting the single optimal set of user-specified
+parameters regarding the model’s performance. It also helps understand
+the performance and optimization sensitivity of the model towards
+important parameter settings, such as fuzzification and asymmetry, or
+choosing different thresholds for classification.
+
+=== PAGE 9 ===
+Expert Systems With Applications 252 (2024) 124127
+9
+G. Charizanos et al.
+Fig. 7. Flowchart of the proposed fraud detection framework.
+Fig. 8. Handling a fraud dataset to build the fraud detection framework.
+The learning stage is then achieved by implementing the framework
+once more on the optimal parameter settings determined after the
+tuning stage. On this last implementation, performance is assessed once
+more, and fuzzy coefficient estimates are extracted. These are stored
+separately to be used in the online implementation. Alternatively, the
+coefficient estimates can be extracted from the run with the optimal set
+of parameters if the coefficient estimates are recorded for each run at
+the tuning stage.
+Before the first online implementation of the fraud detection system,
+a validation effort needs to be conducted to confirm the usefulness of
+the parameter estimates. 𝑉 transactions in the validation dataset are
+sent to the trained model sequentially to mimic the model’s online use
+and validate the trained model’s classification performance. The size of
+the validation dataset needs to be large enough to observe a consistent
+picture of the model’s performance.
+2.4.4. Online implementation
+In the online implementation stage, the new data come from the
+fraud monitoring system after the tuning and learning stages. This is
+represented by the ‘‘Online transaction database’’ in the flow chart in
+Fig. 7. The new data must have the same features as in the historical
+dataset used in the tuning and learning stages.
+The fuzzy coefficient estimates ̄𝛽0 and ̄𝛽𝑖, extracted during the
+learning stage, together with predictor information, are applied to each
+new transaction coming live one by one using Eq. ( 1). This instantly
+generates fuzzy probability estimates, which are classified using a fuzzy
+threshold ̄ 𝜏= ( 𝑎1,𝑎 2,𝑎 3) to create predicted outcomes in the form
+of ̄𝑌 = ( ̂ 𝑦1, ̂ 𝑦2, ̂ 𝑦3). Finally, a decision is made based on the shape of
+each predicted TFN and vertex position. TFN predictions with a vertex
+position of 1 indicate potentially a fraudulent transaction that must be
+blocked. A vertex of 0 indicates a non-fraudulent transaction that can
+be allowed to occur. If the new transaction is classified as fraudulent, a
+notification is created for the relevant team to block the transaction and
+notify the customer. The customer may receive a call from the relevant
+banking department advising them of this activity and taking steps to
+prevent it in future, which may involve the cancellation and re-issue
+of credit card account numbers. If the transaction is not classified as
+fraudulent, it is simply allowed to occur.
+3. Application with real transaction data
+3.1. Performance against sample size and Monte Carlo replications
+We investigate the impact of sample size and the number of MC
+replications on efficiency and performance to determine if the fuzzy
+logistic regression model’s performance is sensitive to both sample size
+and the number of MC replications. Given our study’s key objective,
+this analysis becomes imperative in dealing with the efficiency versus
+performance nexus.
+
+=== PAGE 10 ===
+Expert Systems With Applications 252 (2024) 124127
+10
+G. Charizanos et al.
+Fig. 9. Runtime hours per sample size (vertical numbers) and Monte Carlo replications (horizontal numbers).
+For this analysis, we use simple random sampling to extract different
+sample sizes, ensuring the same rate of 𝑌 = 1 class (0.2%) is kept
+in each sample. The smallest sample is 𝑛 = 5000 , and the largest
+is 𝑛 = 150 , 000. The number of MC replications is a user-selected
+parameter in the fuzzy logistic regression model. We test the number of
+MC replications from 500 to 10,000. These experiments were done on
+a computer with Apple MAC M2, 3.5 GHz CPU, and 8 GB of memory.
+Fig. 9 shows the computation time of each run based on sample size
+and the number of MC replications. The results show that we should
+expect a sample size of 𝑛 = 5000 with only 500 MC replications to be
+associated with 0.47 h of run time. This increases to 10.83 h for the
+same sample size but with 10,000 MC replications. Run time then starts
+to increase exponentially as we induce larger samples with the same
+range of MC replications. For 𝑛 = 10,000, average run time increases
+by 107%, while 𝑛 = 15,000 by a further 48%. The highest estimated
+run time is 634.78 h (26.5 days) for the total population of𝑛 = 284, 807
+and 𝑀𝐶 = 10,000 replication.
+Fig. 10 shows the performance results for each sample size and
+number of MC replications. Performance measures are defined in Table
+1 of Supplementary Material. Performance scores across specificity,
+sensitivity, F1 scores, and MCC do not show any significant variation as
+sample size and number of MC replications increase. Sensitivity remains
+high at 0.996, whilst specificity is greater than 0.856 for all selections.
+The sensitivity score indicates that irrespective of sample size and the
+number of MC replications within the considered limits, the model
+correctly identifies 99.6% of transactions classified as fraudulent. It
+also correctly identifies 85.6% of actual negative classes, as per the
+specificity score. These results suggest that even with a much smaller
+sample and number of MC replications, the model is highly capable
+of correctly identifying both fraudulent and normal transactions. F1
+scores exceed 0.796 and MCC at 0.633 or above. These results indicate
+that the model achieves a good balance between precision and recall,
+while the model’s predictions are better than random. Furthermore, this
+performance is almost identical for all sample sizes and the number of
+MC replications.
+We conclude that the fuzzy logistic regression framework performs
+equally well with a smaller sample size and number of MC replications.
+This allows for selecting 𝑛 = 5000 with just 𝑀𝐶 = 500 replications as
+the identical solution to achieve optimal results with greater efficiency
+in the tuning stage. The ability to work on smaller sample sizes and
+fewer MC replications allows for much greater efficiency for the fraud
+detection framework overall. This is because the tuning and learning
+stages can now finish in a matter of hours rather than days or weeks
+if we had to work with the complete sample. Given that performance
+Table 2
+Hyper-parameter tuning settings.
+Tuning range 1 2 3 4 5
+𝛽0 [−10,10] [ −5,5] [ −2,2] [ −1,1] [ −0.5,0.5]
+𝛽𝑖 [−10,10] [ −5,5] [ −2,2] [ −1,1] [ −0.5,0.5]
+Parameter Values/Intervals selected
+Fuzzification factor 𝑚 = (1, 1.5, 2.5, 4.5)
+Asymmetry setting (𝑙,𝑟 ) = [(4.5, 1.5), (1.5, 4.5), (1, 1), (2.5, 0.5), (0.5, 2.5)]
+Binary fuzzification limits 𝐼𝐿 = 0, 𝐼𝑈 = (0.5, 1.5)
+Fuzzy threshold ̄ 𝜏1 = (0.4, 0.5, 0.6)
+Table 3
+Optimization performance statistics for MSE, MAE, and RMSE measures.
+Opt. Measure Lowest value Highest value Mean Std. Dev. CV
+MSE 0.122 315.54 30.533 68.015 2.228
+MAE 0.383 19.011 3.993 4.348 1.089
+RMSE 0.211 9.157 1.929 2.093 1.085
+is not impacted due to the reduction of sample size or the number of
+MC replications, we can achieve optimal solutions with a similar level
+of performance quicker.
+3.2. Results of tuning and learning stages
+We first perform a parameter tuning using the ranges supplied in
+Table 2 and 500 MC replications to tune up the model and find the
+optimal parameter settings under which the strongest performance and
+optimization are achieved.
+Table 3 shows the results for each optimization measure at the
+tuning stage. We calculate the coefficient of variation (CV) as a measure
+of variability, along with the minimum and maximum error estimates.
+CV values show that MAE and RMSE have similar levels of variability.
+On the other hand, MSE produces a 104.9% larger CV score compared
+to MAE and RMSE. This indicates that for MSE-optimized models, there
+is substantially higher variability in optimization performance, hence,
+more sensitive results.
+Fig. 11 shows the distribution of error estimates for each optimiza-
+tion measure. The box plots in Fig. 11 have fewer outliers for MAE and
+RMSE, with only one outlier for MAE and two for RMSE. In comparison,
+MSE produces three times as many outlier values. Given the lowest
+number of outliers, a more consistent distribution of scores, and a
+low CV value, MAE is chosen as the optimal error measure for model
+optimization.
+
+=== PAGE 11 ===
+Expert Systems With Applications 252 (2024) 124127
+11
+G. Charizanos et al.
+Fig. 10. Performance results based on sample size and the number of Monte Carlo replications.
+Fig. 11. Box-plot distributions for optimization measures across 200 tuning runs.
+Using MAE as the optimization measure, the optimal parameter
+settings are found by ranking the combinations of settings for best
+performance scores across all performance measures and selecting the
+top setting as the single best solution. The complete analysis of tune-
+up tests can be found in Section A of the Supplementary Material.
+The optimal parameter settings, following the tune-up analysis, are as
+follows. Degree of fuzziness for binary fuzzification set at a high level
+𝑚 = 1.5. The asymmetry is set at minimum𝑙 = 1,𝑟 = 1. Coefficient range
+for𝛽0 and𝛽𝑖 is set at [−1, 1]. The fuzzy threshold is set to (0.4, 0.5, 0.6).
+Binary fuzzification minimum and maximum limits are set to [0, 0.5].
+MAE is used as the optimization measure.
+We implement the fuzzy logistic regression model with the above
+optimal settings to achieve the learning stage for the model. The per-
+formance results are shown in Table 4. Specificity and sensitivity scores
+are high, 0.902 and 0.997, respectively. The model correctly identifies
+90.2% of non-fraudulent and 99.7% of fraudulent transactions. The F1
+score of 0.878 suggests a good balance between precision and recall in
+classifying fraudulent transactions. Lastly, the MCC of 0.762 reflects the
+strong quality of the model’s predictions. Overall, these results indicate
+that this optimal set of parameters provides a solid performance for the
+model at the learning stage.
+Considering the 99.8% imbalance towards the negative class ( 𝑌 =
+0), a model influenced by the imbalance issue would show high speci-
+ficity and low sensitivity scores. F1 and MCC would also be low. Not
+observing any of these indicators, we can conclude that the model is not
+impacted by imbalance. Furthermore, the lack of perfect scores across
+all performance measures indicates that complete separation does not
+impact model performance.
+Fuzzy coefficient estimates shown in Table 5 are extracted to be
+used in the online implementation stage for real-time fraud detection.
+Table 5 also depicts defuzzified values of coefficient estimates and their
+exponential values (odds ratios) to assess the predictors’ contribution to
+credit card detection classification. This information also helps under-
+stand the reasons why an operation became suspicious. Most predictors
+have an odds ratio (or its reciprocal) notably greater than one. Although
+V25 has a slightly insignificant correlation ( Fig. 4 , 𝑃 -value = 0.07)
+with the response variable, it has the highest contribution according
+to the odds ratios. A one-unit change in V25 increases the odds of
+being a legitimate transaction by 2.17 times. Thus, V25 is the most
+influential predictor for labeling a transaction as suspicious. V25 is
+followed by V10, V1, and V18. A one-unit change in these predictors
+increases the odds of being a legitimate transaction by at least 1.5
+times. On the other hand, a one-unit change in V26 increases the odds
+of a fraudulent transfer by 1.82 times. A one-unit change in V12, V16,
+and V13 increases the odds of being a fraudulent transaction by at
+least 1.5 times. In the case of a real-world banking application, these
+predictors should be monitored closely to take preventive measures.
+
+=== PAGE 12 ===
+Expert Systems With Applications 252 (2024) 124127
+12
+G. Charizanos et al.
+Table 4
+Performance results of the optimal solution in the learning stage when MSE, MAE, or
+RMSE is used as the optimization measure.
+Performance measure MSE MAE RMSE
+Opt. Error estimate 1.385 1.366 0.615
+Specificity 0.902 0.902 0.902
+Sensitivity 0.997 0.997 0.998
+F1 Score 0.878 0.878 0.878
+MCC 0.763 0.762 0.763
+3.3. Validation and online implementation
+To examine the performance of our framework in an online en-
+vironment, we implement the fuzzy logistic regression model one by
+one on a test set of 𝑉 = 5000 transactions to mimic the processing of
+5000 new transactions. These were initially extracted as the most recent
+transactions list from the complete data to mimic an online environ-
+ment. The time required to process 5000 transactions takes 8.4 min
+in a simulated online environment with the computer mentioned in
+Section 3.1. This corresponds to 0.1 s to process a new transaction in
+an online environment.
+The TFN coefficient estimates in Table 5 are plugged in Eq. (1)
+along with the values of predictors for each transaction at a time.
+Each transaction is evaluated in 0.0056 s on average, indicating that
+a prediction for each transaction is efficiently generated on a real-
+time basis. Each implementation of the model for each transaction
+produces a fuzzy probability prediction. This fuzzy probability is then
+classified using the method under Section 2.4.3, and a fuzzy prediction
+is drawn in the form of a triangular fuzzy number. The vertex position
+of each TFN prediction has the values of either 0 or 1. Following the
+methodology defined in Section 2.4.4, a decision is made on whether
+to block or allow each transaction.
+After completing the processing of 5000 transactions, the confusion
+matrix given Table 6 is obtained to assess classification performance
+in the online environment. Out of 5000 transactions, we know that 10
+transactions are fraudulent and 4990 are non-fraudulent. The model
+correctly classifies 4962 out of 4990 non-fraudulent transactions and
+10 out of 10 fraudulent transactions. At the same time, we also have
+one transaction that is incorrectly identified as non-fraudulent (false
+negative) and 17 transactions that are incorrectly identified as fraud-
+ulent (false positive). The sensitivity, specificity, F1 score, and MCC
+are obtained as given in the first row of Table 7. The online stage of
+the fuzzy logistic regression framework shows strong specificity and
+sensitivity scores of 0.995 and 0.909, respectively. An F1 score of 0.526
+indicates a good balance between precision and recall, while MCC at
+0.809 suggests a balanced and better than random chance classifica-
+tion performance. These are balanced results across all performance
+measures as desired.
+3.4. Use of other ML methods in the proposed framework
+We further implement five crisp ML methods to use as a benchmark
+against the fuzzy logistic regression framework. These are Logistic
+Regression, K-Nearest Neighbors (KNN), Naive Bayes, Artificial Neural
+Network, and XG-Boost. All crisp ML methods were hyper-parameter-
+tuned and trained on the same weighted stratum, also used for the
+fuzzy logistic regression framework. Testing is also done using the same
+online transactions, which were separated for testing purposes of the
+fuzzy logistic framework as well. Following this approach, we simply
+use a crisp ML model instead of the fuzzy logistic regression in our
+fraud detection framework. Thus, the proposed framework and the set
+of crisp ML methods are implemented on the same datasets to ensure
+comparable results.
+Table 7 shows the classification performance results of the online
+implementation for the proposed framework and the benchmark ML
+methods. As discussed, the online implementation of the fuzzy logistic
+regression framework has high performance in detecting both fraudu-
+lent and non-fraudulent transactions. On the other hand, all five crisp
+ML methods show extremely high specificity and low sensitivity scores,
+indicating that these ML methods performed well in identifying non-
+fraudulent transactions but poorly in flagging fraudulent transactions.
+Such performance is indicative of influence from strong imbalance
+towards 𝑌 = 0 . F1 scores and MCC values remain relatively low
+for these methods, providing further evidence that ML methods do
+not work well, given the level of imbalance in the data. However,
+given the higher sensitivity scores, fuzzy logistic regression handles this
+imbalance well.
+3.5. Comparison with other fraud detection methodologies
+We compare the performance of our framework against other re-
+cently published fraud detection approaches. Table 8 shows the re-
+ported performance measures of these approaches. Since not all the
+considered studies report as many performance measures as our study,
+the corresponding cells of Table 8 are left blank.
+One method for detecting fraud anomalies in transaction data is a
+hybrid fuzzy approach that utilizes fuzzy clustering techniques with a
+neural network (Fuzzy Clustering - ANN) (Behera & Panigrahi, 2015).
+The fuzzy clustering part is used in the behavioral analysis phase,
+with a neural network model in the learning stage. This methodology
+utilizes the same dataset as in our work. However, the data is divided
+into 70% for training, 15% for validation, and 15% for testing. The
+training data is used to train the model, the validation data is used
+to evaluate the model and hyperparameter tuning, and the test data
+is used to evaluate the final online model. The analysis of results
+using ROC curves indicates that fraudulent transactions have been
+classified with 93.9% accuracy on the test dataset. Our framework
+achieves a fraud detection rate of 90.9%, indicating a similar sen-
+sitivity level in classifying fraudulent transactions. However, Behera
+and Panigrahi (2015) do not mention the accuracy of non-fraudulent
+transactions (i.e., negative class). If both specificity and sensitivity
+were computed and analyzed, more targeted insights could be derived
+to understand the impact of imbalance. Furthermore, our framework
+handles the imbalance and complete separation issues without impact
+on performance. This is shown by investigating additional performance
+measures, such as F1 and MCC, achieving a more holistic understanding
+of model performance.
+Moreover, an ML model that utilizes a rule induction in a distributed
+tree-based algorithm (Distributed Tree-based) is implemented to detect
+fraudulent transactions (Vorobyev & Krivitskaya, 2022). This approach
+extracts interpretable rules learned by the tree-based ML method to de-
+scribe the fraudulent activity for classification. The mlr3 R package is
+used to access the tree-based algorithm TaskClassif, which allows
+for replicating Vorobyev and Krivitskaya’s (Vorobyev & Krivitskaya,
+2022) analysis. To implement Vorobyev and Krivitskaya’s (Vorobyev
+& Krivitskaya, 2022) approach with our dataset, we used 70% of the
+whole data to train the tree-based model and the remaining 30% for
+testing. The performance of this model shows a sensitivity score of
+0.760, an almost perfect specificity of 0.999, F1 score of 0.527, and
+MCC of 0.830. These results indicate that 76% of fraudulent and almost
+100% of non-fraudulent transactions are classified correctly. This vari-
+ation between sensitivity and specificity scores, with specificity almost
+a perfect score of 1.000 and much lower sensitivity, indicates that the
+class imbalance impacts the model performance. However, we see good
+F1 and MCC results, indicating a good balance between precision and
+recall. In comparison, our framework shows a much higher sensitivity
+score and a more balanced specificity score, indicating no impact on
+model performance from class imbalance. Furthermore, the granular
+results of the fuzzy logistic regression framework have 17 false positives
+and only one false negative. In contrast, the tree-based algorithm has
+
+=== PAGE 13 ===
+Expert Systems With Applications 252 (2024) 124127
+13
+G. Charizanos et al.
+Table 5
+TFN coefficient (Coef.) estimates, defuzzified crisp values of TFN coefficients, and their exponential values (Exp.) obtained in the learning stage.
+Coef. TFN estimate Crisp value Exp. Coef. TFN estimate Crisp value Exp.
+̄𝛽0 (−0.920, −0.587, 0.552) − 0.652 0.521 ̄𝛽15 (−0.082, 0.433, 0.529) 0.293 1.340
+̄𝛽1 (−0.699, −0.458, −0.314) − 0.490 0.613 ̄𝛽16 (0.199, 0.482, 0.854) 0.512 1.669
+̄𝛽2 (−0.963, 0.345, 0.638) 0.007 1.007 ̄𝛽17 (−0.671, −0.095, 0.184) − 0.194 0.824
+̄𝛽3 (0.143, 0.316, 0.503) 0.321 1.379 ̄𝛽18 (−0.913, −0.443, 0.047) − 0.436 0.647
+̄𝛽4 (−0.889, −0.518, 0.664) − 0.248 0.780 ̄𝛽19 (−0.932, 0.068, 0.493) − 0.124 0.883
+̄𝛽5 (−0.611, −0.504, 0.256) − 0.286 0.751 ̄𝛽20 (−0.955, −0.336, 0.161) − 0.376 0.687
+̄𝛽6 (−0.229, 0.105, 0.837) 0.238 1.269 ̄𝛽21 (−0.605, −0.254, −0.018) − 0.292 0.747
+̄𝛽7 (0.017, 0.397, 0.597) 0.337 1.401 ̄𝛽22 (−0.591, −0.534, 0.582) − 0.181 0.834
+̄𝛽8 (−0.455, 0.223, 0.778) 0.182 1.200 ̄𝛽23 (−0.651, −0.366, 0.508) − 0.170 0.844
+̄𝛽9 (−0.533, −0.071, 0.895) 0.097 1.102 ̄𝛽24 (−0.260, 0.363, 0.425) 0.176 1.192
+̄𝛽10 (−0.954, −0.654, 0.047) − 0.520 0.595 ̄𝛽25 (−0.836, −0.820, −0.672) − 0.776 0.460
+̄𝛽11 (−0.780, −0.169, 0.693) − 0.085 0.919 ̄𝛽26 (0.289, 0.581, 0.931) 0.600 1.822
+̄𝛽12 (0.248, 0.477, 0.984) 0.570 1.768 ̄𝛽27 (−0.520, −0.176, 0.259) − 0.146 0.864
+̄𝛽13 (−0.073, 0.733, 0.758) 0.473 1.605 ̄𝛽28 (−0.162, 0.140, 0.319) 0.099 1.104
+̄𝛽14 (−0.456, −0.301, 0.100) − 0.219 0.803 ̄𝛽29 (−0.157, −0.066, 0.009) − 0.071 0.931
+Table 6
+Confusion matrix for online implementation.
+Predicted negative Predicted positive
+Actual negative TN = 4972 FP = 17
+Actual positive FN = 1 TP = 10
+Table 7
+Performance comparison of online implementation with fuzzy logistic regression
+framework and crisp ML methods.
+Method Specificity Sensitivity F1 Score MCC
+Fuzzy logistic regression - Online stage 0.995 0.909 0.526 0.809
+Crisp ML logistic regression 0.999 0.048 0.087 0.154
+Crisp KNN ML method 0.999 0.009 0.019 0.071
+Naive Bayes 0.999 0.097 0.171 0.258
+Crisp ANN ML method 0.999 0.500 0.645 0.674
+Crisp XG Boost ML method 0.999 0.500 0.645 0.674
+a lower false positive (12 instances) but a much higher false negative
+(37 instances) decision rate.
+Strelcenia and Prakoonwit (2023) discuss the increasing risk of
+fraud associated with credit card usage on online websites and plat-
+forms, proposing a knowledge-constrained generative adversarial net-
+work (K-CGAN) algorithm to detect fraud anomalies in transaction
+data. The K-CGAN model is evaluated using several machine learning
+algorithms; however, we benchmark against the XG-Boost method,
+which achieves the strongest classification results. At first glance, this
+method showcases high performance with an accuracy score of 99.9%
+and an F1 score of 0.999. All other machine learning models considered
+under the K-CGAN algorithm showcase similar results. However, there
+is no consideration of sensitivity and specificity to assess how over-
+fitting caused by complete separation could create such artificially
+high performance (Charizanos et al., 2023). Additionally, the potential
+application of this system for real-time fraud detection and the level of
+accuracy in an online implementation are not considered.
+The intelligent sampling approach of Chen et al. (2024) showcases
+strong F1 performance across all the long short-term memory (LSTM)-
+Conditional Random Field and three feed-forward deep neural network
+(FDNN) methods applied to the fraud detection dataset, which range
+between 0.800−0.830, compared to 0.526 for the fuzzy logistic regres-
+sion framework. However, the sensitivity scores, here given as recall,
+indicate a significantly weaker classification performance. These range
+between 0.710−0.760, compared to the much stronger outcome from the
+fuzzy logistic regression with 0.909. This could be due to the imbalance
+and separation issues in the data; however, due to the lack of other
+performance measures provided by the authors, it is difficult to make
+a full assessment.
+4. Application with simulated transaction data
+4.1. Results of tuning and learning stages
+Parameter tuning is performed using the same settings in Sec-
+tion 3.2. Table 2 of the Supplementary Material shows the tuning
+and learning outcomes in terms of MSE, MAE, and RMSE. We see a
+significant spread between the lowest and highest values achieved for
+these optimization measures. However, we see consistently low scores
+for all three optimization measures when analyzing the mean and
+standard deviation values using CV. This showcases consistently strong
+tuning outcomes with a small presence of outliers, which is evidenced
+further in Fig. 4 of the Supplementary Material. All three box plots
+indicate that a few scenarios produce outlier results for the optimization
+measures; however, the overall distribution of results clusters closely
+to the mean position. The selected optimal scenario has the following
+settings. Fuzzification factor 𝑚 is set at 1.5. The asymmetry settings
+are taken as 𝑙 = 1 and 𝑟 = 1 . The fuzzy classification threshold is
+̄ 𝜏= (0.4, 0.5, 0.6). The fuzzification limits are 0 and 1.5. The coefficient
+generation intervals for 𝛽0 and 𝛽𝑖 are set to [−2, 2].
+Table 3 of the Supplementary Material presents the classification
+performance outcomes for the optimal solution extracted from the
+tuning and learning stage. We see similarly strong classification perfor-
+mance with all three optimization measures, with specificity at 0.936
+indicating accurate classification towards the negative class and sen-
+sitivity of 0.992 indicating accurate classification towards the positive
+class. The lack of significant variability between specificity and sensitiv-
+ity strongly indicates that the imbalance problem does not impact the
+model. Moreover, both F1 and MCC scores consistently indicate high
+classification performance despite separation and imbalance issues in
+the data.
+Table 4 of the Supplementary Material shows TFN and crisp coeffi-
+cient estimates obtained by the center of gravity method. There are two
+more pieces of evidence that point towards the proposed methodology’s
+strong classification outcomes. Firstly, there are no large values for any
+of the coefficient estimates. Models impacted by complete separation
+often produce extremely large coefficient estimates for the predictors
+that cluster the binary responses. Secondly, none of the odds ratio
+estimates (exponential values for the coefficient estimates) deviates
+to infinity, which is a strong indicator of models not impacted by
+separation or imbalance.
+4.2. Validation, online implementation and benchmarking
+We implement the model using the 𝑉 = 5000 most recent transac-
+tions in the selected dataset to examine the classification performance
+of the proposed online method using fuzzy logistic regression. The
+model continues to showcase strong efficiency, with an average time
+of 0.13 s to classify each transaction. Five benchmark ML methods on
+
+=== PAGE 14 ===
+Expert Systems With Applications 252 (2024) 124127
+14
+G. Charizanos et al.
+Table 8
+Online fuzzy logistic regression classification performance against benchmark studies.
+Method Specificity Sensitivity F1 Score MCC Accuracy
+Online fuzzy logistic regression 0.995 0.909 0.526 0.809 99.6%
+Fuzzy clustering - ANN
+(Behera & Panigrahi, 2015)
+93.9%
+Distributed tree-based
+(Vorobyev & Krivitskaya, 2022)
+0.999 0.760 0.527 0.830 83.3%
+K-CGAN method with XG-Boost
+(Strelcenia & Prakoonwit, 2023)
+0.999 99.9%
+Intelligent sampling (LSTM-CRF)
+(Chen et al., 2024)
+0.760 0.800
+Intelligent sampling (FDNN, FR = 1.3)
+(Chen et al., 2024)
+0.710 0.810
+Intelligent sampling (FDNN, FR = 1.4)
+(Chen et al., 2024)
+0.770 0.810
+Intelligent sampling (FDNN, FR = 1.5)
+(Chen et al., 2024)
+0.750 0.830
+Table 7 are also used for comparison for the simulated transactions
+data.
+Table 5 of the Supplementary Material displays the performance
+measures for the fuzzy logistic regression method against the bench-
+mark ML algorithms. All benchmark methods fail to produce valid
+results, with significant variability between sensitivity and specificity
+scores, which is evidence of the impact of imbalance problems. F1
+scores and MCC remain low for all benchmark methods. However, the
+proposed online fuzzy logistic regression method achieves high perfor-
+mance outcomes with a specificity of 0.812, a sensitivity of 0.955, an
+F1 score of 0.811, and an MCC of 0.997. These strong, consistent results
+indicate no impact from imbalance or separation on the performance
+of the proposed classifier.
+5. Conclusion and future work
+In this study, we propose an innovative fraud detection method for
+better precision by focusing on the issues of handling non-stationary
+changes in fraud behavior, imbalance, and complete separation. To
+handle these issues, we implement a fuzzy logistic regression approach
+with tuning, learning, and online implementation stages.
+Transaction fraud characteristics change rapidly, limiting predictive
+effectiveness given the non-stationarity of the mechanisms creating
+predictors and responses. The performance of the proposed solution
+shows that it is not affected by sample size and number of Monte Carlo
+replications. This is a key contribution and crucial benefit towards
+efficiency, providing a control factor towards non-stationary changes
+in the online implementation. This novelty also allows researchers to
+work with smaller sample sizes, enhancing the capacity for experimen-
+tation. In comparison, most methodologies in the literature focus on an
+implementation using the whole dataset, which can be inefficient and
+hence not applicable for real-time detection (Maes et al., 2002; Shen
+et al., 2007; Srivastava et al., 2008).
+The results from performance analysis show that the proposed
+framework exhibits a high degree of accuracy in detecting both fraudu-
+lent and non-fraudulent transactions. There is no indication of negative
+influence on performance due to the existence of imbalance and com-
+plete separation in the fraud data, with consistently strong performance
+results on both tuning, learning, and online implementation stages.
+The model correctly classifies 90.9% of fraudulent (positive class)
+and 99.5% of non-fraudulent (negative class) transactions. We also
+see a low rate of false positive (transactions incorrectly classified as
+fraudulent) and false negative (transactions incorrectly classified as
+non-fraudulent) decisions. On the other hand, several approaches in the
+literature focus only on the predictive accuracy of positive classes (Be-
+hera & Panigrahi, 2015; Shen et al., 2007). It is crucial to utilize
+measures that assess both positive and negative classes, given that
+a complete assessment of the impact of class imbalance can only be
+achieved by reviewing both classes of the binary response variable.
+Compared to the recent fraud detection approaches, the proposed
+online fraud detection framework using fuzzy logistic regression out-
+performs the fuzzy clustering algorithm of Behera and Panigrahi (2015)
+on the predictive accuracy of fraudulent activity. At the same time,
+a complete assessment shows substantial accuracy for non-fraudulent
+transactions. While the results against the tree-based ML method of
+Vorobyev and Krivitskaya (2022) are fairly comparable in terms of
+granular false and true positive or negative rates, overall, the proposed
+framework has better sensitivity performance and imbalance handling.
+Moreover, Strelcenia and Prakoonwit (2023) shows strong accuracy
+and F1 scores, which could be impacted by the complete separation
+in the data. The separation problem would create over-fitting issues,
+making the performance scores almost perfect. On the other hand,
+the proposed fraud detection framework showcases strong performance
+towards both imbalance and separation issues.
+The practical implication of the proposed framework is three-fold.
+Firstly, since its performance is not heavily dependent on the training
+sample size and all the software codes are readily available, it can
+easily be integrated into existing fraud monitoring systems in real-time.
+Thus, financial institutions can implement the proposed framework on
+their systems at a low cost. Secondly, the proposed framework cap-
+tures the changing characteristics of both the fraudster and consumer
+sides. This provides the institutions with a sustainable system that
+needs periodic re-training at a frequency specified by the institution.
+Thirdly, our framework is highly precise in detecting fraudulent and
+non-fraudulent transactions. A higher performance in fraud detection
+with our framework implies less financial losses for a financial in-
+stitution when implemented. It also means less account exposure to
+fraudsters when the financial institution fails to flag and stop the
+activity. Better precision in not interfering with legitimate transactions
+with our framework translates to higher consumer satisfaction and less
+consumer interaction, leading to a better operational environment for
+the institutions.
+It should be noted that using unequally spaced time series data
+due to random sampling can introduce bias if not carefully handled.
+However, this is not an issue in our study, as this is handled by ensuring
+that the ranking of the data, or the order of transactions, is maintained
+and autocorrelation information is not utilized in the method.
+A limitation of fraud detection studies is the unavailability of real
+and non-anonymized transaction datasets due to regulations on pub-
+lishing financial data. Therefore, most studies either use the publicly
+available transaction fraud dataset or do not share their data.
+Further research could focus on the methodology for cross-industry
+application of fuzzy classifiers for fraud prediction across different
+types of fraud. While we have mainly focused on transaction fraud,
+
+=== PAGE 15 ===
+Expert Systems With Applications 252 (2024) 124127
+15
+G. Charizanos et al.
+other examples are identity theft, financial sanctions, and corporate
+fraud. Moreover, different types of fuzzy numbers could wield varied
+performance results. Experimentation with trapezoidal, Gaussian, L-
+R, and Z numbers could prove beneficial. Although our framework is
+mainly designed to identify fraudulent transactions, the odds ratios
+produced by the model at the end of the learning stage are useful
+to identify the most influential factors of suspicious transactions. The
+method applied in this study can be expanded with fuzzy hypothesis
+tests in future studies. Whether fuzzy regression parameters are signif-
+icant or not can be investigated with fuzzy hypothesis tests, and the
+results can be used to identify the factors that cause doubt in a real-
+world banking application. However, this needs an unmasked dataset
+with information on the predictors.
+CRediT authorship contribution statement
+Georgios Charizanos: Conceptualization, Methodology, Soft-
+ware, Visualization, Investigation, Writing – original draft. Haydar
+Demirhan: Conceptualization, Methodology, Investigation, Valida-
+tion, Visualization, Writing – original draft, Writing – review &
+editing. Duygu İçen: Conceptualization, Methodology, Investigation,
+Validation, Visualization, Writing – review & editing.
+Declaration of competing interest
+The authors declare that they have no known competing financial
+interests or personal relationships that could have appeared to influence
+the work reported in this paper.
+Data availability
+All research data and codes are available via a GitHub repository.
+Acknowledgments
+The authors would like to thank the associate editor and five
+reviewers for their comments and suggestions that improved the clarity
+of the manuscript.
+Appendix A. Supplementary data
+Supplementary material related to this article can be found online
+at https://doi.org/10.1016/j.eswa.2024.124127.
+References
+Abakarim, Y., Lahby, M., & Attioui, A. (2018). An efficient real time model for credit
+card fraud detection based on deep learning. In Proceedings of the 12th international
+conference on intelligent systems: theories and applications (pp. 1–7).
+Abdallah, A., Maarof, M. A., & Zainal, A. (2016). Fraud detection system: A survey.
+Journal of Network and Computer Applications , 68, 90–113.
+ABS (2023). Personal fraud, 2021-22 financial year, Australian Bureau of Statistics.
+Accessed 07 December 2023, https://www.abs.gov.au/statistics/people/crime-and-
+justice/personal-fraud/latest-release.
+Aite-Novarica (2022). The state of credit card fraud in 2022. Accessed 05 March 2024,
+https://www.aite-novarica.com/reports/state-of-credit-card-fraud-2022/.
+Ba, H. (2019). Improving detection of credit card fraudulent transactions using
+generative adversarial networks. arXiv preprint arXiv:1907.03355.
+Behera, T. K., & Panigrahi, S. (2015). Credit card fraud detection: A hybrid approach
+using fuzzy clustering & neural network. In 2015 second international conference on
+advances in computing and communication engineering (pp. 494–499). IEEE.
+Carcillo, F., Dal Pozzolo, A., Le Borgne, Y.-A., Caelen, O., Mazzer, Y., & Bontempi, G.
+(2018). Scarff: a scalable framework for streaming credit card fraud detection with
+spark. Information Fusion , 41, 182–194.
+Carcillo, F., Le Borgne, Y.-A., Caelen, O., & Bontempi, G. (2018). Streaming active learn-
+ing strategies for real-life credit card fraud detection: Assessment and visualization.
+International Journal of Data Science and Analytics , 5(4), 285–300.
+Carcillo, F., Le Borgne, Y.-A., Caelen, O., Kessaci, Y., Oblé, F., & Bontempi, G. (2021).
+Combining unsupervised and supervised learning in credit card fraud detection.
+Information Sciences , 557, 317–331.
+Casalino, G., Castellano, G., & Mencar, C. (2019). Credit card fraud detection by
+dynamic incremental semi-supervised fuzzy clustering. In 11th conference of the
+European society for fuzzy logic and technology EUSfLAt 2019, (pp. 198–204). Atlantis
+Press.
+Charizanos, G., Demirhan, H., & İçen, D. (2023). A Monte Carlo fuzzy logistic regression
+framework against imbalance and separation. Information Sciences , Article 119893.
+Chen, C.-T., Lee, C., Huang, S.-H., & Peng, W.-C. (2024). Credit card fraud detection
+via intelligent sampling and self-supervised learning. ACM Transactions on Intelligent
+Systems and Technology .
+Cochran, W. G. (1977). Sampling techniques (1st ed.). (pp. 89–111). John Wiley & Sons.
+Dal Pozzolo, A., Boracchi, G., Caelen, O., Alippi, C., & Bontempi, G. (2017). Credit card
+fraud detection: a realistic modeling and a novel learning strategy. IEEE Transactions
+on Neural Networks and Learning Systems , 29(8), 3784–3797.
+Dal Pozzolo, A., Caelen, O., Le Borgne, Y.-A., Waterschoot, S., & Bontempi, G. (2014).
+Learned lessons in credit card fraud detection from a practitioner perspective. Expert
+Systems with Applications , 41(10), 4915–4928.
+Dubois, D., & Prade, H. (1978). Operations on fuzzy numbers. International Journal of
+Systems Science , 9(6), 613–626.
+Fang, Y., Zhang, Y., & Huang, C. (2019). Credit card fraud detection based on machine
+learning. Computers, Materials & Continua , 61(1), 185–195.
+Ghai, V., & Kang, S. S. (2022). Credit card transaction data analysis and performance
+evaluation of machine learning algorithms for credit card fraud detection. Vol.
+2555, In AIP conference proceedings . AIP Publishing.
+Han, S., Zhu, K., Zhou, M., & Cai, X. (2022). Competition-driven multimodal mul-
+tiobjective optimization and its application to feature selection for credit card
+fraud detection. IEEE Transactions on Systems, Man, and Cybernetics: Systems , 52(12),
+7845–7857.
+HaratiNik, M. R., Akrami, M., Khadivi, S., & Shajari, M. (2012). FUZZGY: A hy-
+brid model for credit card fraud detection. In 6th international symposium on
+telecommunications (pp. 1088–1093). IEEE.
+He, C., Leslie, D. S., & Grant, J. A. (2024). Online detection and fuzzy clustering of
+anomalies in non-stationary time series. Signals, 5(1), 40–59.
+Hilal, W., Gadsden, S. A., & Yawney, J. (2022). Financial fraud: a review of anomaly
+detection techniques and recent advances. Expert Systems with Applications , 193,
+Article 116429.
+Jain, Y., Tiwari, N., Dubey, S., & Jain, S. (2019). A comparative analysis of various
+credit card fraud detection techniques. International Journal of Recent Technology
+and Engineering , 7(5), 402–407.
+Kalton, G., & Flores-Cervantes, I. (2003). Weighting methods. Journal of Official
+Statistics, 19(2), 81.
+Kitts, B., Zhang, J. Y., Wu, G., Brandi, W., Beasley, J., Morrill, K., et al. (2015). Click
+fraud detection: adversarial pattern recognition over 5 years at microsoft. Real
+World Data Mining Applications , 181–201.
+Kurshan, E., Shen, H., & Yu, H. (2020). Financial crime & fraud detection using
+graph computing: Application considerations & outlook. In 2020 second international
+conference on transdisciplinary AI (transAI) (pp. 125–130). IEEE.
+Lebichot, B., Le Borgne, Y.-A., He-Guelton, L., Oblé, F., & Bontempi, G. (2020). Deep-
+learning domain adaptation techniques for credit cards fraud detection. In Recent
+advances in big data and deep learning: proceedings of the INNS big data and deep
+learning conference INNSBDdL2019, held at sestri levante, genova, Italy 16-18 April
+2019 (pp. 78–88). Springer.
+Lenard, M. J., & Alam, P. (2005). Application of fuzzy logic to fraud detection. In
+Encyclopedia of information science and technology, first edition (pp. 135–139). IGI
+Global.
+Maes, S., Tuyls, K., Vanschoenwinkel, B., & Manderick, B. (2002). Credit card fraud
+detection using Bayesian and neural networks. Vol. 261 , In Proceedings of the 1st
+international naiso congress on neuro fuzzy technologies (p. 270).
+Nilson-Report (2024). The cost of credit card fraud. Accessed 05 March 2024, https:
+//nilsonreport.com/articles/card-fraud-losses-worldwide/.
+Pourahmad, S., Ayatollahi, S. M. T., Taheri, S. M., & Agahi, Z. H. (2011). Fuzzy logistic
+regression based on the least squares approach with application in clinical studies.
+Computers & Mathematics with Applications , 62(9), 3353–3365.
+Razooqi, T., Khurana, P., Raahemifar, K., & Abhari, A. (2016). Credit card fraud detec-
+tion using fuzzy logic and neural network. In Proceedings of the 19th communications
+& networking symposium (pp. 1–5).
+Sandberg, E. (2023). Average number of credit card transactions per day and year.
+Accessed 05 March 2024, https://www.cardrates.com/advice/number-of-credit-
+card-transactions-per-day-year/.
+Shen, A., Tong, R., & Deng, Y. (2007). Application of classification models on credit
+card fraud detection. In 2007 international conference on service systems and service
+management (pp. 1–4). IEEE.
+Shenoy, K., & Harris, B. (2021). Credit card transactions fraud detection data. Re-
+trieved on 25/03/2024 from Kaggle Repository, https://www.kaggle.com/datasets/
+kartik2112/fraud-detection?resource=download.
+Srivastava, A., Kundu, A., Sural, S., & Majumdar, A. (2008). Credit card fraud detection
+using hidden Markov model. IEEE Transactions on Dependable and Secure Computing ,
+5(1), 37–48.
+Strelcenia, E., & Prakoonwit, S. (2023). Improving classification performance in credit
+card fraud detection by using new data augmentation. AI, 4(1), 172–198.
+Vorobyev, I., & Krivitskaya, A. (2022). Reducing false positives in bank anti-fraud
+systems based on rule induction in distributed tree-based models. Computers &
+Security, 120, Article 102786.
+

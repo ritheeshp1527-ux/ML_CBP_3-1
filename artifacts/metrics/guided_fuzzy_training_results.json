@@ -1,0 +1,115 @@
+{
+  "model": "guided_fuzzy_logistic_regression",
+  "description": "Guided Fuzzy Logistic Regression with Fisher information spread initialization and bounded optimization",
+  "dataset_rows_fitted": 15000,
+  "training_frauds": 360,
+  "primary_objective": "weighted_bce",
+  "selected_validation_threshold": 0.9000000000000001,
+  "objective_comparison": {
+    "weighted_bce": {
+      "fit_time_seconds": 11.957354700018186,
+      "training_loss": 0.11858676870784406,
+      "optimal_threshold": 0.9000000000000001,
+      "validation_default": {
+        "threshold": 0.5,
+        "precision": 0.02627430373095113,
+        "recall_sensitivity": 0.8771929824561403,
+        "specificity": 0.9674363840854773,
+        "f1": 0.05102040816326531,
+        "average_precision_pr_auc": 0.6538784052114666,
+        "roc_auc": 0.9726862231496075,
+        "mcc": 0.14860909620876975,
+        "tn": 55051,
+        "fp": 1853,
+        "fn": 7,
+        "tp": 50,
+        "prediction_latency_ms_per_row": 0.0002782640753789068
+      },
+      "validation_tuned": {
+        "threshold": 0.9000000000000001,
+        "precision": 0.12533333333333332,
+        "recall_sensitivity": 0.8245614035087719,
+        "specificity": 0.9942359060874455,
+        "f1": 0.2175925925925926,
+        "average_precision_pr_auc": 0.6538784052114666,
+        "roc_auc": 0.9726862231496075,
+        "mcc": 0.32012169015706254,
+        "tn": 56576,
+        "fp": 328,
+        "fn": 10,
+        "tp": 47,
+        "prediction_latency_ms_per_row": 0.00029042853841827255
+      }
+    },
+    "class_weighted_fuzzy_mae": {
+      "fit_time_seconds": 19.36801189999096,
+      "training_loss": 3.1831293584999765,
+      "optimal_threshold": 0.7500000000000001,
+      "validation_default": {
+        "threshold": 0.5,
+        "precision": 0.023148148148148147,
+        "recall_sensitivity": 0.8771929824561403,
+        "specificity": 0.9629200056235062,
+        "f1": 0.04510599909788002,
+        "average_precision_pr_auc": 0.07902509241742166,
+        "roc_auc": 0.9733870032877779,
+        "mcc": 0.13906742308908188,
+        "tn": 54794,
+        "fp": 2110,
+        "fn": 7,
+        "tp": 50,
+        "prediction_latency_ms_per_row": 0.0003509769840208974
+      },
+      "validation_tuned": {
+        "threshold": 0.7500000000000001,
+        "precision": 0.13666666666666666,
+        "recall_sensitivity": 0.7192982456140351,
+        "specificity": 0.995448474623928,
+        "f1": 0.22969187675070027,
+        "average_precision_pr_auc": 0.07902509241742166,
+        "roc_auc": 0.9733870032877779,
+        "mcc": 0.31221822615615724,
+        "tn": 56645,
+        "fp": 259,
+        "fn": 16,
+        "tp": 41,
+        "prediction_latency_ms_per_row": 0.0003915310475163783
+      }
+    },
+    "unweighted_fuzzy_mae": {
+      "fit_time_seconds": 11.042835700005526,
+      "training_loss": 3.1183616894776103,
+      "optimal_threshold": 0.6000000000000001,
+      "validation_default": {
+        "threshold": 0.5,
+        "precision": 0.8723404255319149,
+        "recall_sensitivity": 0.7192982456140351,
+        "specificity": 0.9998945592576972,
+        "f1": 0.7884615384615384,
+        "average_precision_pr_auc": 0.7356407798662349,
+        "roc_auc": 0.9479073404021794,
+        "mcc": 0.791946193696321,
+        "tn": 56898,
+        "fp": 6,
+        "fn": 16,
+        "tp": 41,
+        "prediction_latency_ms_per_row": 0.0004086884006362985
+      },
+      "validation_tuned": {
+        "threshold": 0.6000000000000001,
+        "precision": 0.9523809523809523,
+        "recall_sensitivity": 0.7017543859649122,
+        "specificity": 0.9999648530858991,
+        "f1": 0.8080808080808081,
+        "average_precision_pr_auc": 0.7356407798662349,
+        "roc_auc": 0.9479073404021794,
+        "mcc": 0.817370451312094,
+        "tn": 56902,
+        "fp": 2,
+        "fn": 17,
+        "tp": 40,
+        "prediction_latency_ms_per_row": 0.00040493671092925806
+      }
+    }
+  }
+}

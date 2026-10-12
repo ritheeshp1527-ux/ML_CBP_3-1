@@ -1,0 +1,17 @@
+strategy,protocol,target_budget_pct,actual_reviewed_count,actual_reviewed_pct,base_classifier_tp,base_classifier_fp,base_classifier_fn,reviewed_frauds,fraud_recall_in_review,reviewed_prior_tp,reviewed_salvaged_fn,reviewed_cleared_fp,reviewed_inspected_tn,oracle_auto_false_negatives,oracle_auto_false_positives,oracle_auto_error_rate_pct,oracle_review_assumed
+fuzzy_width_triage,stream_rank_cutoff,0.5,285,0.5003335557038026,64,267,11,1,0.013333333333333334,0,1,2,282,10,265,0.485205638971717,True
+margin_uncertainty_triage,stream_rank_cutoff,0.5,285,0.5003335557038026,64,267,11,1,0.013333333333333334,1,0,155,129,11,112,0.21701924943098613,True
+fuzzy_width_triage,stream_rank_cutoff,1.0,570,1.0006671114076051,64,267,11,1,0.013333333333333334,0,1,3,566,10,264,0.48588452262732296,True
+margin_uncertainty_triage,stream_rank_cutoff,1.0,570,1.0006671114076051,64,267,11,65,0.8666666666666667,64,1,267,238,10,0,0.01773301177471982,True
+fuzzy_width_triage,stream_rank_cutoff,2.0,1139,1.9995786664794073,64,267,11,3,0.04,0,3,3,1133,8,264,0.4872543575228848,True
+margin_uncertainty_triage,stream_rank_cutoff,2.0,1139,1.9995786664794073,64,267,11,65,0.8666666666666667,64,1,267,807,10,0,0.01791376314422371,True
+fuzzy_width_triage,stream_rank_cutoff,5.0,2848,4.99982444436642,64,267,11,4,0.05333333333333334,0,4,5,2839,7,262,0.4970987175222678,True
+margin_uncertainty_triage,stream_rank_cutoff,5.0,2848,4.99982444436642,64,267,11,68,0.9066666666666666,64,4,267,2513,7,0,0.01293565435931552,True
+fuzzy_width_triage,validation_calibrated_cutoff,0.5,191,0.33531126013833784,64,267,11,1,0.013333333333333334,0,1,2,188,10,265,0.48440224762642903,True
+margin_uncertainty_triage,validation_calibrated_cutoff,0.5,220,0.3862223938766195,64,267,11,1,0.013333333333333334,1,0,119,100,11,148,0.28021571322829647,True
+fuzzy_width_triage,validation_calibrated_cutoff,1.0,406,0.7127558723359432,64,267,11,1,0.013333333333333334,0,1,3,402,10,264,0.4844755640427187,True
+margin_uncertainty_triage,validation_calibrated_cutoff,1.0,465,0.8163336961483094,64,267,11,8,0.10666666666666667,7,1,241,216,10,26,0.06372019753261235,True
+fuzzy_width_triage,validation_calibrated_cutoff,2.0,850,1.4922228854323936,64,267,11,2,0.02666666666666667,0,2,3,845,9,264,0.48652694610778446,True
+margin_uncertainty_triage,validation_calibrated_cutoff,2.0,951,1.6695340753484782,64,267,11,65,0.8666666666666667,64,1,267,619,10,0,0.0178536358929496,True
+fuzzy_width_triage,validation_calibrated_cutoff,5.0,2179,3.825357255714336,64,267,11,4,0.05333333333333334,0,4,5,2170,7,262,0.4910282386871839,True
+margin_uncertainty_triage,validation_calibrated_cutoff,5.0,2371,4.162424072188477,64,267,11,68,0.9066666666666666,64,4,267,2036,7,0,0.01282262644025572,True

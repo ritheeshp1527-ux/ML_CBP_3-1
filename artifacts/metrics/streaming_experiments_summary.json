@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-12T12:04:16Z",
+  "test_transactions_count": 56962,
+  "test_fraud_count": 75,
+  "test_fraud_prevalence": 0.001316667251852112,
+  "strategies_evaluated": [
+    "guided_fuzzy_frozen",
+    "guided_fuzzy_adaptive_immediate",
+    "guided_fuzzy_adaptive_delayed_1h",
+    "logistic_regression_frozen",
+    "logistic_regression_adaptive_immediate"
+  ],
+  "primary_findings": {
+    "frozen_vs_adaptive_recall": {
+      "guided_fuzzy_frozen": 0.8533333333333334,
+      "guided_fuzzy_adaptive_immediate": 0.8533333333333334,
+      "guided_fuzzy_adaptive_delayed_1h": 0.8533333333333334
+    },
+    "frozen_vs_adaptive_f1": {
+      "guided_fuzzy_frozen": 0.31527093596059114,
+      "guided_fuzzy_adaptive_immediate": 0.3855421686746988,
+      "guided_fuzzy_adaptive_delayed_1h": 0.37317784256559766
+    }
+  }
+}

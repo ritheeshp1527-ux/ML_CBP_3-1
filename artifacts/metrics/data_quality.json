@@ -1,0 +1,44 @@
+{
+  "data_quality": {
+    "rows": 284807,
+    "columns": 31,
+    "fraud_count": 492,
+    "legitimate_count": 284315,
+    "fraud_rate": 0.001727485630620034,
+    "missing_cells": 0,
+    "infinite_cells": 0,
+    "duplicate_rows_keep_first": 1081,
+    "rows_in_duplicate_groups": 1854,
+    "time_is_nondecreasing": true,
+    "target_values": [
+      0,
+      1
+    ]
+  },
+  "chronological_split": {
+    "train": {
+      "rows": 170884,
+      "fraud": 360,
+      "legitimate": 170524,
+      "fraud_rate": 0.0021066922590763323,
+      "time_min": 0.0,
+      "time_max": 120396.0
+    },
+    "validation": {
+      "rows": 56961,
+      "fraud": 57,
+      "legitimate": 56904,
+      "fraud_rate": 0.0010006846789908884,
+      "time_min": 120396.0,
+      "time_max": 145247.0
+    },
+    "test": {
+      "rows": 56962,
+      "fraud": 75,
+      "legitimate": 56887,
+      "fraud_rate": 0.001316667251852112,
+      "time_min": 145248.0,
+      "time_max": 172792.0
+    }
+  }
+}

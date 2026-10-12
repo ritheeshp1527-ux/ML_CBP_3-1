@@ -1,0 +1,543 @@
+2.3. Fuzzy logistic regression
+The fuzzy logistic regression model, defined in Eq. ( 1), captures
+the relationship between the fuzzy binary response variable, ̄𝑌 , and a
+set of predictors, 𝑿 = (𝑋𝑖),𝑖 = 1, …,𝑘 , by using the associated fuzzy
+coefficients, ̄𝜷 = ( ̄𝛽𝑗 ),𝑗 = 0 , 1, …,𝑘 , and fuzzy success probabilities,
+̄ 𝑝∈ [0, 1].
+log
+( ̄𝑃
+1 − ̄𝑃
+)
+= ̄𝛽0 + ̄𝛽1𝑋1 + ̄𝛽2𝑋2 +⋯ + ̄𝛽𝑘𝑋𝑘 (1)
+2.3.1. Fuzzification of binary responses
+A binary triangular fuzzy number (TFN), ̄𝑌 , defined by three values
+𝑦1 < 𝑦2 < 𝑦3, and a membership function 𝜇𝑌 (𝑥) (Dubois & Prade ,
+1978), operates as a mapping from a binary discrete set Z2 = {0, 1}
+to R′ = {𝑥 ∈ R| − 1 ≤𝑥 ≤ 1} and is a function 𝐹 ∶ Z2 → R′ defined as
+𝐹 (𝑌 ) = [𝑌 −𝑚⋅𝓁⋅ 𝑈,𝑌,𝑌 +𝑚⋅𝑟⋅𝑈 ], where𝑈 ∼𝑈𝑛𝑖𝑓𝑜𝑟𝑚 (𝐼𝐿,𝐼𝑈 ) and𝑚
+is the degree of fuzziness. Here 𝑟 and 𝓁 are to adjust the symmetry of
+output TFN. The upper and lower limits, 𝐼𝐿 and 𝐼𝑈 are user-specified
+parameters (Charizanos et al., 2023).
+2.3.2. Random fuzzy vectors for coefficient estimates
+Random fuzzy vectors ̄𝑉𝑘 = ( ̄𝑉1𝑘, …, ̄𝑉𝑁𝑘 ) are generated within a
+pre-defined range of ̄𝐼𝛽 = [ ̄𝐼 −, ̄𝐼 +] by ordering random crisp vectors,
+such that 𝑥1𝑘 < 𝑥2𝑘 < 𝑥3𝑘, from a set of randomly generated crisp
+vectors, 𝑣𝑘 = (𝑥1𝑘, …,𝑥 3𝑁+3,𝑘), where 𝑥𝑖𝑘 ∈ [0, 1]. These fuzzy vectors
+are used for the generation of fuzzy coefficients,̄𝜷. Then, ̄𝜷 are plugged
+in the model equation in Eq. ( 1), and fuzzy success probabilities ̄𝑷 are
+computed. The process is repeated 𝑀 times, defined by the user as
+the number of Monte Carlo (MC) replications. Optimization is achieved
+by the use of the fuzzy definitions for MSE, MAE, or RMSE optimiza-
+tion measures, while Specificity, Sensitivity, F1 Score, and MCC are
+computed as performance measures ( Charizanos et al., 2023).
+2.3.3. Classification of subjects with a fuzzy threshold
+The vertex position of each TFN probability, ̄𝑃 , is classified by com-
+paring against a fuzzy threshold ̄ 𝜏= (𝑎1,𝑎 2,𝑎 3). Firstly, the expected
+value of ̄𝑃 , E(̄𝑃 ), is calculated following Dubois and Prade (1978). The
+difference between ̄𝑃 and ̄ 𝜏and width,𝑤(D) are estimated. If E(̄𝑃 )<𝑎 2,
+̂ 𝑦2 = 0 , otherwise, ̂ 𝑦2 = 1 . The outcome of this process is a matrix
+representing the output ̂𝑌 where each element is a triangular fuzzy
+number with the vertex ̂ 𝑦2 is equal to either 0 or 1, while ̂ 𝑦1 and ̂ 𝑦3
+points are estimated by ̂ 𝑦1 = ̂ 𝑦2 −𝑤(D) and ̂ 𝑦3 = ̂ 𝑦2 +𝑤(D).
+2.4. Real-time fuzzy fraud detection
+This section presents the proposed fraud detection framework, start-
+ing with a general description and delving into the implementation
+
+=== PAGE 8 ===
+Expert Systems With Applications 252 (2024) 124127
+8
+G. Charizanos et al.
+Fig. 6. General implementation of credit card fraud detection with binary response variable (RV), using fuzzy methodology and stratified random sampling (SRS) to handle
+non-stationary changes in transaction data.
+details. A general outline of the methodology is first given. Then, we
+explore the handling of non-stationary changes in transaction fraud
+characteristics, the tuning and learning stages of the fuzzy logistic
+framework, and finally, the online implementation using fuzzy coeffi-
+cients.
+2.4.1. Outline of implementation
+Fig. 6 displays the overall process of implementing our method-
+ology for transaction fraud detection. The first step is to gather all
+the required historical data, with required binary responses for fraud
+and non-fraud transactions, along with the predictors. The volume of
+the historical data can be large. This does not create any issues in
+our framework. Step 2 involves using stratified random sampling to
+handle non-stationary changes in fraud characteristics, as defined in
+Section 2.4.2. In Step 3, the binary responses are fuzzified using the
+method outlined in Section B.1, and then the tuning and learning stages
+are implemented in Step 4. In Step 5, we extract the fuzzy coefficients
+using the single optimal solution from the tuning and learning stages.
+These are then applied to online transactions using the fuzzy logistic
+regression equation for each transaction at a time. We then classify
+the fuzzy probabilities that are output from Step 6 into fuzzy binary
+outcomes, which are used in the final step to decide whether a trans-
+action is fraudulent or not, taking relevant action to protect consumer
+accounts. The methodology as a whole is executed with R, version
+4.2.3. Our codes for the method and applications in this article are
+given at https://github.com/GZanos/FFL . Fig. 7 presents details and
+the flow chart of the proposed framework with every function defined
+under Sections 2.3 and 2.4.
+2.4.2. Handling non-stationary changes in fraud transaction data
+Continuous changes in fraud characteristics govern the transaction
+fraud environment. The types of transaction fraud can change suddenly
+and frequently. This creates a highly sensitive environment towards
+non-stationary changes and the necessity to handle such patterns in
+the data. In our methodology, stratified random sampling ( Cochran,
+1977; Kalton & Flores-Cervantes , 2003 ) is used to apply weights in
+the transaction data using a timestamp component. In this way, we
+assign a higher representation to the recent fraudulent transactions
+than the older ones while keeping the level of randomness stable with
+a probabilistic sampling technique ( Cochran, 1977).
+The process to handle the data for the proposed fraud detection
+framework is outlined in Fig. 8. The dataset of 𝑁 +𝑉 transactions that
+will be used to train the fraud detection system is first divided into
+training and validation portions of sizes 𝑁 and 𝑉 without changing
+the order of transactions. Thus, a proportion of the transactions at the
+last segment of the 𝑁 +𝑉 transactions is separated as the validation
+portion. Random sampling must be avoided to preserve the changing
+fraud and consumer characteristics while specifying the validation set.
+The stratified random sampling is implemented on the training
+portion of the whole dataset. The overall population of 𝑁 credit card
+transactions in the training portion is first divided into two strata: 𝑆1
+and 𝑆2, given a timestamp threshold 𝑡. This timestamp threshold is
+user-defined and represents the desired timestamp that separates the
+periods of recent and historical data. Random sampling is then used
+to create two new samples 𝑠1 and 𝑠2 of sizes 𝑛1 and 𝑛2 from 𝑆1 and
+𝑆2, respectively. 𝑛1 and𝑛2 are specified based on the characteristics of
+the fraud dataset and the availability of computational resources. The
+same rate of 𝑌 = 1 class is maintained in both 𝑠1 and 𝑠2. We analyze
+the within-stratum variance, 𝑉𝑖,𝑖 = 1, 2, for both recent and historical
+data using Eq. ( 2). A lower within-stratum variance indicates less
+variability, hence a more homogeneous stratum that better represents
+non-stationary changes in recent fraud characteristics.
+𝑉𝑖 =
+(
+1
+𝑛𝑖
+𝑛𝑖∑
+𝑗=1
+𝐼{𝑌𝑖 ∈𝑆𝑖}
+)(
+1 − 1
+𝑛𝑖
+𝑛𝑖∑
+𝑗=1
+𝐼{𝑌𝑖 ∈𝑆𝑖}
+)
+, (2)
+where 𝑉𝑖 ∈ [0, 1] and 𝐼{⋅} is an indicator function. Then, we find the
+weight factor towards recent data in the first stratum relative to both
+strata using Eq. (3):
+𝑊𝑡 = 𝑉1
+𝑉1 +𝑉2
+(3)
+We take 𝑛1𝑊𝑡 observations from 𝑠1 and 𝑛2𝑊𝑡 from 𝑠2 to create the
+training sample. The training sample is then used for hyper-parameter
+tuning and learning stages.
+2.4.3. Tuning and learning stages
+The tuning stage aims to find the optimal parameter settings under
+which the model showcases the best performance results for the fuzzy
+logistic regression model of Section 2 . There are several user-specified
+parameters in the fuzzy logistic regression model. These include the
+limits for generating random coefficient values, degree of fuzziness 𝑚,
+asymmetry points,𝑙,𝑟 , and minimum and maximum fuzzification limits.
+Users can also select different fuzzy thresholds for classification. The
+model is implemented over a grid of different parameter settings. Per-
+formance and optimization results are extracted for each combination
+of the parameters in the grid, which allows for the assessment of how
+the framework performs under different conditions. This performance
+analysis allows for selecting the single optimal set of user-specified
+parameters regarding the model’s performance. It also helps understand
+the performance and optimization sensitivity of the model towards
+important parameter settings, such as fuzzification and asymmetry, or
+choosing different thresholds for classification.
+
+=== PAGE 9 ===
+Expert Systems With Applications 252 (2024) 124127
+9
+G. Charizanos et al.
+Fig. 7. Flowchart of the proposed fraud detection framework.
+Fig. 8. Handling a fraud dataset to build the fraud detection framework.
+The learning stage is then achieved by implementing the framework
+once more on the optimal parameter settings determined after the
+tuning stage. On this last implementation, performance is assessed once
+more, and fuzzy coefficient estimates are extracted. These are stored
+separately to be used in the online implementation. Alternatively, the
+coefficient estimates can be extracted from the run with the optimal set
+of parameters if the coefficient estimates are recorded for each run at
+the tuning stage.
+Before the first online implementation of the fraud detection system,
+a validation effort needs to be conducted to confirm the usefulness of
+the parameter estimates. 𝑉 transactions in the validation dataset are
+sent to the trained model sequentially to mimic the model’s online use
+and validate the trained model’s classification performance. The size of
+the validation dataset needs to be large enough to observe a consistent
+picture of the model’s performance.
+2.4.4. Online implementation
+In the online implementation stage, the new data come from the
+fraud monitoring system after the tuning and learning stages. This is
+represented by the ‘‘Online transaction database’’ in the flow chart in
+Fig. 7. The new data must have the same features as in the historical
+dataset used in the tuning and learning stages.
+The fuzzy coefficient estimates ̄𝛽0 and ̄𝛽𝑖, extracted during the
+learning stage, together with predictor information, are applied to each
+new transaction coming live one by one using Eq. ( 1). This instantly
+generates fuzzy probability estimates, which are classified using a fuzzy
+threshold ̄ 𝜏= ( 𝑎1,𝑎 2,𝑎 3) to create predicted outcomes in the form
+of ̄𝑌 = ( ̂ 𝑦1, ̂ 𝑦2, ̂ 𝑦3). Finally, a decision is made based on the shape of
+each predicted TFN and vertex position. TFN predictions with a vertex
+position of 1 indicate potentially a fraudulent transaction that must be
+blocked. A vertex of 0 indicates a non-fraudulent transaction that can
+be allowed to occur. If the new transaction is classified as fraudulent, a
+notification is created for the relevant team to block the transaction and
+notify the customer. The customer may receive a call from the relevant
+banking department advising them of this activity and taking steps to
+prevent it in future, which may involve the cancellation and re-issue
+of credit card account numbers. If the transaction is not classified as
+fraudulent, it is simply allowed to occur.
+3. Application with real transaction data
+3.1. Performance against sample size and Monte Carlo replications
+We investigate the impact of sample size and the number of MC
+replications on efficiency and performance to determine if the fuzzy
+logistic regression model’s performance is sensitive to both sample size
+and the number of MC replications. Given our study’s key objective,
+this analysis becomes imperative in dealing with the efficiency versus
+performance nexus.
+
+=== PAGE 10 ===
+Expert Systems With Applications 252 (2024) 124127
+10
+G. Charizanos et al.
+Fig. 9. Runtime hours per sample size (vertical numbers) and Monte Carlo replications (horizontal numbers).
+For this analysis, we use simple random sampling to extract different
+sample sizes, ensuring the same rate of 𝑌 = 1 class (0.2%) is kept
+in each sample. The smallest sample is 𝑛 = 5000 , and the largest
+is 𝑛 = 150 , 000. The number of MC replications is a user-selected
+parameter in the fuzzy logistic regression model. We test the number of
+MC replications from 500 to 10,000. These experiments were done on
+a computer with Apple MAC M2, 3.5 GHz CPU, and 8 GB of memory.
+Fig. 9 shows the computation time of each run based on sample size
+and the number of MC replications. The results show that we should
+expect a sample size of 𝑛 = 5000 with only 500 MC replications to be
+associated with 0.47 h of run time. This increases to 10.83 h for the
+same sample size but with 10,000 MC replications. Run time then starts
+to increase exponentially as we induce larger samples with the same
+range of MC replications. For 𝑛 = 10,000, average run time increases
+by 107%, while 𝑛 = 15,000 by a further 48%. The highest estimated
+run time is 634.78 h (26.5 days) for the total population of𝑛 = 284, 807
+and 𝑀𝐶 = 10,000 replication.
+Fig. 10 shows the performance results for each sample size and
+number of MC replications. Performance measures are defined in Table
+1 of Supplementary Material. Performance scores across specificity,
+sensitivity, F1 scores, and MCC do not show any significant variation as
+sample size and number of MC replications increase. Sensitivity remains
+high at 0.996, whilst specificity is greater than 0.856 for all selections.
+The sensitivity score indicates that irrespective of sample size and the
+number of MC replications within the considered limits, the model
+correctly identifies 99.6% of transactions classified as fraudulent. It
+also correctly identifies 85.6% of actual negative classes, as per the
+specificity score. These results suggest that even with a much smaller
+sample and number of MC replications, the model is highly capable
+of correctly identifying both fraudulent and normal transactions. F1
+scores exceed 0.796 and MCC at 0.633 or above. These results indicate
+that the model achieves a good balance between precision and recall,
+while the model’s predictions are better than random. Furthermore, this
+performance is almost identical for all sample sizes and the number of
+MC replications.
+We conclude that the fuzzy logistic regression framework performs
+equally well with a smaller sample size and number of MC replications.
+This allows for selecting 𝑛 = 5000 with just 𝑀𝐶 = 500 replications as
+the identical solution to achieve optimal results with greater efficiency
+in the tuning stage. The ability to work on smaller sample sizes and
+fewer MC replications allows for much greater efficiency for the fraud
+detection framework overall. This is because the tuning and learning
+stages can now finish in a matter of hours rather than days or weeks
+if we had to work with the complete sample. Given that performance
+Table 2
+Hyper-parameter tuning settings.
+Tuning range 1 2 3 4 5
+𝛽0 [−10,10] [ −5,5] [ −2,2] [ −1,1] [ −0.5,0.5]
+𝛽𝑖 [−10,10] [ −5,5] [ −2,2] [ −1,1] [ −0.5,0.5]
+Parameter Values/Intervals selected
+Fuzzification factor 𝑚 = (1, 1.5, 2.5, 4.5)
+Asymmetry setting (𝑙,𝑟 ) = [(4.5, 1.5), (1.5, 4.5), (1, 1), (2.5, 0.5), (0.5, 2.5)]
+Binary fuzzification limits 𝐼𝐿 = 0, 𝐼𝑈 = (0.5, 1.5)
+Fuzzy threshold ̄ 𝜏1 = (0.4, 0.5, 0.6)
+Table 3
+Optimization performance statistics for MSE, MAE, and RMSE measures.
+Opt. Measure Lowest value Highest value Mean Std. Dev. CV
+MSE 0.122 315.54 30.533 68.015 2.228
+MAE 0.383 19.011 3.993 4.348 1.089
+RMSE 0.211 9.157 1.929 2.093 1.085
+is not impacted due to the reduction of sample size or the number of
+MC replications, we can achieve optimal solutions with a similar level
+of performance quicker.
+3.2. Results of tuning and learning stages
+We first perform a parameter tuning using the ranges supplied in
+Table 2 and 500 MC replications to tune up the model and find the
+optimal parameter settings under which the strongest performance and
+optimization are achieved.
+Table 3 shows the results for each optimization measure at the
+tuning stage. We calculate the coefficient of variation (CV) as a measure
+of variability, along with the minimum and maximum error estimates.
+CV values show that MAE and RMSE have similar levels of variability.
+On the other hand, MSE produces a 104.9% larger CV score compared
+to MAE and RMSE. This indicates that for MSE-optimized models, there
+is substantially higher variability in optimization performance, hence,
+more sensitive results.
+Fig. 11 shows the distribution of error estimates for each optimiza-
+tion measure. The box plots in Fig. 11 have fewer outliers for MAE and
+RMSE, with only one outlier for MAE and two for RMSE. In comparison,
+MSE produces three times as many outlier values. Given the lowest
+number of outliers, a more consistent distribution of scores, and a
+low CV value, MAE is chosen as the optimal error measure for model
+optimization.
+
+=== PAGE 11 ===
+Expert Systems With Applications 252 (2024) 124127
+11
+G. Charizanos et al.
+Fig. 10. Performance results based on sample size and the number of Monte Carlo replications.
+Fig. 11. Box-plot distributions for optimization measures across 200 tuning runs.
+Using MAE as the optimization measure, the optimal parameter
+settings are found by ranking the combinations of settings for best
+performance scores across all performance measures and selecting the
+top setting as the single best solution. The complete analysis of tune-
+up tests can be found in Section A of the Supplementary Material.
+The optimal parameter settings, following the tune-up analysis, are as
+follows. Degree of fuzziness for binary fuzzification set at a high level
+𝑚 = 1.5. The asymmetry is set at minimum𝑙 = 1,𝑟 = 1. Coefficient range
+for𝛽0 and𝛽𝑖 is set at [−1, 1]. The fuzzy threshold is set to (0.4, 0.5, 0.6).
+Binary fuzzification minimum and maximum limits are set to [0, 0.5].
+MAE is used as the optimization measure.
+We implement the fuzzy logistic regression model with the above
+optimal settings to achieve the learning stage for the model. The per-
+formance results are shown in Table 4. Specificity and sensitivity scores
+are high, 0.902 and 0.997, respectively. The model correctly identifies
+90.2% of non-fraudulent and 99.7% of fraudulent transactions. The F1
+score of 0.878 suggests a good balance between precision and recall in
+classifying fraudulent transactions. Lastly, the MCC of 0.762 reflects the
+strong quality of the model’s predictions. Overall, these results indicate
+that this optimal set of parameters provides a solid performance for the
+model at the learning stage.
+Considering the 99.8% imbalance towards the negative class ( 𝑌 =
+0), a model influenced by the imbalance issue would show high speci-
+ficity and low sensitivity scores. F1 and MCC would also be low. Not
+observing any of these indicators, we can conclude that the model is not
+impacted by imbalance. Furthermore, the lack of perfect scores across
+all performance measures indicates that complete separation does not
+impact model performance.
+Fuzzy coefficient estimates shown in Table 5 are extracted to be
+used in the online implementation stage for real-time fraud detection.
+Table 5 also depicts defuzzified values of coefficient estimates and their
+exponential values (odds ratios) to assess the predictors’ contribution to
+credit card detection classification. This information also helps under-
+stand the reasons why an operation became suspicious. Most predictors
+have an odds ratio (or its reciprocal) notably greater than one. Although
+V25 has a slightly insignificant correlation ( Fig. 4 , 𝑃 -value = 0.07)
+with the response variable, it has the highest contribution according
+to the odds ratios. A one-unit change in V25 increases the odds of
+being a legitimate transaction by 2.17 times. Thus, V25 is the most
+influential predictor for labeling a transaction as suspicious. V25 is
+followed by V10, V1, and V18. A one-unit change in these predictors
+increases the odds of being a legitimate transaction by at least 1.5
+times. On the other hand, a one-unit change in V26 increases the odds
+of a fraudulent transfer by 1.82 times. A one-unit change in V12, V16,
+and V13 increases the odds of being a fraudulent transaction by at
+least 1.5 times. In the case of a real-world banking application, these
+predictors should be monitored closely to take preventive measures.
+
+=== PAGE 12 ===
+Expert Systems With Applications 252 (2024) 124127
+12
+G. Charizanos et al.
+Table 4
+Performance results of the optimal solution in the learning stage when MSE, MAE, or
+RMSE is used as the optimization measure.
+Performance measure MSE MAE RMSE
+Opt. Error estimate 1.385 1.366 0.615
+Specificity 0.902 0.902 0.902
+Sensitivity 0.997 0.997 0.998
+F1 Score 0.878 0.878 0.878
+MCC 0.763 0.762 0.763
+3.3. Validation and online implementation
+To examine the performance of our framework in an online en-
+vironment, we implement the fuzzy logistic regression model one by
+one on a test set of 𝑉 = 5000 transactions to mimic the processing of
+5000 new transactions. These were initially extracted as the most recent
+transactions list from the complete data to mimic an online environ-
+ment. The time required to process 5000 transactions takes 8.4 min
+in a simulated online environment with the computer mentioned in
+Section 3.1. This corresponds to 0.1 s to process a new transaction in
+an online environment.
+The TFN coefficient estimates in Table 5 are plugged in Eq. (1)
+along with the values of predictors for each transaction at a time.
+Each transaction is evaluated in 0.0056 s on average, indicating that
+a prediction for each transaction is efficiently generated on a real-
+time basis. Each implementation of the model for each transaction
+produces a fuzzy probability prediction. This fuzzy probability is then
+classified using the method under Section 2.4.3, and a fuzzy prediction
+is drawn in the form of a triangular fuzzy number. The vertex position
+of each TFN prediction has the values of either 0 or 1. Following the
+methodology defined in Section 2.4.4, a decision is made on whether
+to block or allow each transaction.
+After completing the processing of 5000 transactions, the confusion
+matrix given Table 6 is obtained to assess classification performance
+in the online environment. Out of 5000 transactions, we know that 10
+transactions are fraudulent and 4990 are non-fraudulent. The model
+correctly classifies 4962 out of 4990 non-fraudulent transactions and
+10 out of 10 fraudulent transactions. At the same time, we also have
+one transaction that is incorrectly identified as non-fraudulent (false
+negative) and 17 transactions that are incorrectly identified as fraud-
+ulent (false positive). The sensitivity, specificity, F1 score, and MCC
+are obtained as given in the first row of Table 7. The online stage of
+the fuzzy logistic regression framework shows strong specificity and
+sensitivity scores of 0.995 and 0.909, respectively. An F1 score of 0.526
+indicates a good balance between precision and recall, while MCC at
+0.809 suggests a balanced and better than random chance classifica-
+tion performance. These are balanced results across all performance
+measures as desired.
+3.4. Use of other ML methods in the proposed framework
+We further implement five crisp ML methods to use as a benchmark
+against the fuzzy logistic regression framework. These are Logistic
+Regression, K-Nearest Neighbors (KNN), Naive Bayes, Artificial Neural
+Network, and XG-Boost. All crisp ML methods were hyper-parameter-
+tuned and trained on the same weighted stratum, also used for the
+fuzzy logistic regression framework. Testing is also done using the same
+online transactions, which were separated for testing purposes of the
+fuzzy logistic framework as well. Following this approach, we simply
+use a crisp ML model instead of the fuzzy logistic regression in our
+fraud detection framework. Thus, the proposed framework and the set
+of crisp ML methods are implemented on the same datasets to ensure
+comparable results.
+Table 7 shows the classification performance results of the online
+implementation for the proposed framework and the benchmark ML
+methods. As discussed, the online implementation of the fuzzy logistic
+regression framework has high performance in detecting both fraudu-
+lent and non-fraudulent transactions. On the other hand, all five crisp
+ML methods show extremely high specificity and low sensitivity scores,
+indicating that these ML methods performed well in identifying non-
+fraudulent transactions but poorly in flagging fraudulent transactions.
+Such performance is indicative of influence from strong imbalance
+towards 𝑌 = 0 . F1 scores and MCC values remain relatively low
+for these methods, providing further evidence that ML methods do
+not work well, given the level of imbalance in the data. However,
+given the higher sensitivity scores, fuzzy logistic regression handles this
+imbalance well.
+3.5. Comparison with other fraud detection methodologies
+We compare the performance of our framework against other re-
+cently published fraud detection approaches. Table 8 shows the re-
+ported performance measures of these approaches. Since not all the
+considered studies report as many performance measures as our study,
+the corresponding cells of Table 8 are left blank.
+One method for detecting fraud anomalies in transaction data is a
+hybrid fuzzy approach that utilizes fuzzy clustering techniques with a
+neural network (Fuzzy Clustering - ANN) (Behera & Panigrahi, 2015).
+The fuzzy clustering part is used in the behavioral analysis phase,
+with a neural network model in the learning stage. This methodology
+utilizes the same dataset as in our work. However, the data is divided
+into 70% for training, 15% for validation, and 15% for testing. The
+training data is used to train the model, the validation data is used
+to evaluate the model and hyperparameter tuning, and the test data
+is used to evaluate the final online model. The analysis of results
+using ROC curves indicates that fraudulent transactions have been
+classified with 93.9% accuracy on the test dataset. Our framework
+achieves a fraud detection rate of 90.9%, indicating a similar sen-
+sitivity level in classifying fraudulent transactions. However, Behera
+and Panigrahi (2015) do not mention the accuracy of non-fraudulent
+transactions (i.e., negative class). If both specificity and sensitivity
+were computed and analyzed, more targeted insights could be derived
+to understand the impact of imbalance. Furthermore, our framework
+handles the imbalance and complete separation issues without impact
+on performance. This is shown by investigating additional performance
+measures, such as F1 and MCC, achieving a more holistic understanding
+of model performance.
+Moreover, an ML model that utilizes a rule induction in a distributed
+tree-based algorithm (Distributed Tree-based) is implemented to detect
+fraudulent transactions (Vorobyev & Krivitskaya, 2022). This approach
+extracts interpretable rules learned by the tree-based ML method to de-
+scribe the fraudulent activity for classification. The mlr3 R package is
+used to access the tree-based algorithm TaskClassif, which allows
+for replicating Vorobyev and Krivitskaya’s (Vorobyev & Krivitskaya,
+2022) analysis. To implement Vorobyev and Krivitskaya’s (Vorobyev
+& Krivitskaya, 2022) approach with our dataset, we used 70% of the
+whole data to train the tree-based model and the remaining 30% for
+testing. The performance of this model shows a sensitivity score of
+0.760, an almost perfect specificity of 0.999, F1 score of 0.527, and
+MCC of 0.830. These results indicate that 76% of fraudulent and almost
+100% of non-fraudulent transactions are classified correctly. This vari-
+ation between sensitivity and specificity scores, with specificity almost
+a perfect score of 1.000 and much lower sensitivity, indicates that the
+class imbalance impacts the model performance. However, we see good
+F1 and MCC results, indicating a good balance between precision and
+recall. In comparison, our framework shows a much higher sensitivity
+score and a more balanced specificity score, indicating no impact on
+model performance from class imbalance. Furthermore, the granular
+results of the fuzzy logistic regression framework have 17 false positives
+and only one false negative. In contrast, the tree-based algorithm has
+
+=== PAGE 13 ===
+Expert Systems With Applications 252 (2024) 124127
+13
+G. Charizanos et al.
+Table 5
+TFN coefficient (Coef.) estimates, defuzzified crisp values of TFN coefficients, and their exponential values (Exp.) obtained in the learning stage.
+Coef. TFN estimate Crisp value Exp. Coef. TFN estimate Crisp value Exp.
+̄𝛽0 (−0.920, −0.587, 0.552) − 0.652 0.521 ̄𝛽15 (−0.082, 0.433, 0.529) 0.293 1.340
+̄𝛽1 (−0.699, −0.458, −0.314) − 0.490 0.613 ̄𝛽16 (0.199, 0.482, 0.854) 0.512 1.669
+̄𝛽2 (−0.963, 0.345, 0.638) 0.007 1.007 ̄𝛽17 (−0.671, −0.095, 0.184) − 0.194 0.824
+̄𝛽3 (0.143, 0.316, 0.503) 0.321 1.379 ̄𝛽18 (−0.913, −0.443, 0.047) − 0.436 0.647
+̄𝛽4 (−0.889, −0.518, 0.664) − 0.248 0.780 ̄𝛽19 (−0.932, 0.068, 0.493) − 0.124 0.883
+̄𝛽5 (−0.611, −0.504, 0.256) − 0.286 0.751 ̄𝛽20 (−0.955, −0.336, 0.161) − 0.376 0.687
+̄𝛽6 (−0.229, 0.105, 0.837) 0.238 1.269 ̄𝛽21 (−0.605, −0.254, −0.018) − 0.292 0.747
+̄𝛽7 (0.017, 0.397, 0.597) 0.337 1.401 ̄𝛽22 (−0.591, −0.534, 0.582) − 0.181 0.834
+̄𝛽8 (−0.455, 0.223, 0.778) 0.182 1.200 ̄𝛽23 (−0.651, −0.366, 0.508) − 0.170 0.844
+̄𝛽9 (−0.533, −0.071, 0.895) 0.097 1.102 ̄𝛽24 (−0.260, 0.363, 0.425) 0.176 1.192
+̄𝛽10 (−0.954, −0.654, 0.047) − 0.520 0.595 ̄𝛽25 (−0.836, −0.820, −0.672) − 0.776 0.460
+̄𝛽11 (−0.780, −0.169, 0.693) − 0.085 0.919 ̄𝛽26 (0.289, 0.581, 0.931) 0.600 1.822
+̄𝛽12 (0.248, 0.477, 0.984) 0.570 1.768 ̄𝛽27 (−0.520, −0.176, 0.259) − 0.146 0.864
+̄𝛽13 (−0.073, 0.733, 0.758) 0.473 1.605 ̄𝛽28 (−0.162, 0.140, 0.319) 0.099 1.104
+̄𝛽14 (−0.456, −0.301, 0.100) − 0.219 0.803 ̄𝛽29 (−0.157, −0.066, 0.009) − 0.071 0.931
+Table 6
+Confusion matrix for online implementation.
+Predicted negative Predicted positive
+Actual negative TN = 4972 FP = 17
+Actual positive FN = 1 TP = 10
+Table 7
+Performance comparison of online implementation with fuzzy logistic regression
+framework and crisp ML methods.
+Method Specificity Sensitivity F1 Score MCC
+Fuzzy logistic regression - Online stage 0.995 0.909 0.526 0.809
+Crisp ML logistic regression 0.999 0.048 0.087 0.154
+Crisp KNN ML method 0.999 0.009 0.019 0.071
+Naive Bayes 0.999 0.097 0.171 0.258
+Crisp ANN ML method 0.999 0.500 0.645 0.674
+Crisp XG Boost ML method 0.999 0.500 0.645 0.674
+a lower false positive (12 instances) but a much higher false negative
+(37 instances) decision rate.
+Strelcenia and Prakoonwit (2023) discuss the increasing risk of
+fraud associated with credit card usage on online websites and plat-
+forms, proposing a knowledge-constrained generative adversarial net-
+work (K-CGAN) algorithm to detect fraud anomalies in transaction
+data. The K-CGAN model is evaluated using several machine learning
+algorithms; however, we benchmark against the XG-Boost method,
+which achieves the strongest classification results. At first glance, this
+method showcases high performance with an accuracy score of 99.9%
+and an F1 score of 0.999. All other machine learning models considered
+under the K-CGAN algorithm showcase similar results. However, there
+is no consideration of sensitivity and specificity to assess how over-
+fitting caused by complete separation could create such artificially
+high performance (Charizanos et al., 2023). Additionally, the potential
+application of this system for real-time fraud detection and the level of
+accuracy in an online implementation are not considered.
+The intelligent sampling approach of Chen et al. (2024) showcases
+strong F1 performance across all the long short-term memory (LSTM)-
+Conditional Random Field and three feed-forward deep neural network
+(FDNN) methods applied to the fraud detection dataset, which range
+between 0.800−0.830, compared to 0.526 for the fuzzy logistic regres-
+sion framework. However, the sensitivity scores, here given as recall,
+indicate a significantly weaker classification performance. These range
+between 0.710−0.760, compared to the much stronger outcome from the
+fuzzy logistic regression with 0.909. This could be due to the imbalance
+and separation issues in the data; however, due to the lack of other
+performance measures provided by the authors, it is difficult to make
+a full assessment.
